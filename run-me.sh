@@ -16,4 +16,9 @@ if [ -f requirements.txt ] ; then
   pip install -r requirements.txt
 fi
 
+if [ ! -f config.py ] ; then
+  cp config.py.template config.py
+  print "Default config created!"
+fi
+
 deactivate
