@@ -246,3 +246,5 @@ fabric.properties
 
 #Custom
 config.py
+tmp/
+database.db

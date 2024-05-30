@@ -50,8 +50,8 @@ class Tequila:
             dict: A dictionary containing the JSON response from the flight search API.
         """
 
-        kwargs |= {"fly_from": fly_from, "fly_to": fly_to, "date_from": datetime.strftime(date_from, "%d/%m%%Y"),
-                   "date_to": datetime.strftime(date_to, "%d/%m%%Y"), "nights_in_dst_from": nights_in_dst_from,
+        kwargs |= {"fly_from": fly_from, "fly_to": fly_to, "date_from": datetime.strftime(date_from, "%d/%m/%Y"),
+                   "date_to": datetime.strftime(date_to, "%d/%m/%Y"), "nights_in_dst_from": nights_in_dst_from,
                    "nights_in_dst_to": nights_in_dst_to, "curr": curr, "locale": locale}
         filtered = {k: v for k, v in kwargs.items() if v is not None}
         response = requests.get("https://api.tequila.kiwi.com/v2/search", params=filtered,
