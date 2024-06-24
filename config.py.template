@@ -1,1 +1,3 @@
 APIKEY = "<Your Kiwi api key>"
+DB_FILENAME = "database.db"
+DB_DEBUG = False
