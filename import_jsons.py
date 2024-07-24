@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 from tqdm import tqdm
 
@@ -15,4 +16,5 @@ if __name__ == "__main__":
     for file in pbar:
         with open(os.path.join(JSONS_PATH, file), "r") as fo:
             data = json.loads(fo.read())
-            db.insert_json(data, "")
+            timestamp = datetime.strptime(file, "%Y%m%d%H%M%SBKK.json")
+            db.insert_json(data, timestamp=timestamp)
