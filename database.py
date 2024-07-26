@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, List, Dict, Tuple
 
 from sqlalchemy import create_engine, TIMESTAMP, TEXT, ForeignKey, String, Table, Column, and_
-from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship, Query
 
 
 class Base(DeclarativeBase):
@@ -215,3 +215,6 @@ class Database:
                 pass
             else:
                 old_route.__setattr__(k, v[1])
+
+    def get_all_search(self)->Query:
+        return self.session.query(Search)

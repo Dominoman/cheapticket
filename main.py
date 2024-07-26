@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/home/laca/workspace/cheapticket/.venv/bin/python3
+
 import calendar
 from datetime import datetime
 
