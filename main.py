@@ -24,9 +24,8 @@ if __name__ == "__main__":
         result = kiwi.search("BUD,VIE", start_date, end_date, "BKK", 5, 18, max_fly_duration=17, max_stopovers=1,
                              limit=1000)
         logging.debug(kiwi.search_url)
-        fname=f"{config.SAVEDIR}/{datetime.now().strftime("%Y%m%d%H%M%S")}-{start_date.strftime("%Y%m")}.json"
+        fname=f"{config.SAVEDIR}/{datetime.now().strftime('%Y%m%d%H%M%S')}-{start_date.strftime('%Y%m')}.json"
         logging.info("Insert DB")
         db.insert_json(result,kiwi.search_url,store_json_database=False,store_json_file_path=fname)
 
-    logging.info("Fi"
-                 "nished")
+    logging.info("Finished")
