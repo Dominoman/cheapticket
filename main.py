@@ -37,7 +37,8 @@ if __name__ == "__main__":
                              limit=1000)
         logging.info(kiwi.status_code)
         savefile(result)
-        logging.info("Insert DB")
-        db.insert_json(result,kiwi.search_url)
+        if kiwi.status_code==200:
+            logging.info("Insert DB")
+            db.insert_json(result,kiwi.search_url)
 
     logging.info("Finished")
