@@ -1,8 +1,7 @@
-import json
 from datetime import datetime
 from typing import Optional, List, Dict, Tuple
 
-from sqlalchemy import create_engine, TIMESTAMP, TEXT, ForeignKey, String, Table, Column, and_
+from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, and_
 from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship, Query
 
 
@@ -24,7 +23,6 @@ class Search(Base):
 
     search_id: Mapped[str] = mapped_column(primary_key=True)
     url: Mapped[str]
-    json: Mapped[str] = mapped_column(TEXT)
     timestamp: Mapped[datetime] = mapped_column(TIMESTAMP, default=datetime.now)
     results: Mapped[int]
 
