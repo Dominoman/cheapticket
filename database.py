@@ -136,18 +136,13 @@ class Database:
         Base.metadata.create_all(self.engine)
         self.session = Session(self.engine)
 
-    def insert_json(self, json_data: dict, url: str = "", timestamp: datetime = None, store_json_database:bool=True,store_json_file_path:str="") -> bool:
+    def insert_json(self, json_data: dict, url: str = "", timestamp: datetime = None) -> bool:
         old_search = self.session.query(Search).get(json_data["search_id"])
         if old_search is not None:
             return False
         if timestamp is None:
             timestamp = datetime.now()
-        json_text = json.dumps(json_data, indent=4)
-        store_data = json_text if store_json_database else ""
-        if store_json_file_path!="":
-            with open(store_json_file_path,"w") as fo:
-                fo.write(json_text)
-        new_search = Search(search_id=json_data["search_id"], url=url, json=store_data, timestamp=timestamp,
+        new_search = Search(search_id=json_data["search_id"], url=url, timestamp=timestamp,
                             results=json_data["_results"])
         self.session.add(new_search)
         for itinerary in json_data["data"]:

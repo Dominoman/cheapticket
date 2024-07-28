@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import calendar
+import json
 import os
 from datetime import datetime
 
@@ -9,6 +10,15 @@ import logging
 import config
 from database import Database
 from kiwi import Tequila
+
+
+def savefile(json_data:dict):
+    json_text = json.dumps(json_data, indent=4)
+    fname = f"{config.SAVEDIR}/{datetime.now().strftime('%Y%m%d%H%M%S')}-{start_date.strftime('%Y%m')}.json"
+
+    with open(fname, "w") as fo:
+        fo.write(json_text)
+
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -25,8 +35,9 @@ if __name__ == "__main__":
         logging.info("Search")
         result = kiwi.search("BUD,VIE", start_date, end_date, "BKK", 5, 18, max_fly_duration=17, max_stopovers=1,
                              limit=1000)
-        fname=f"{config.SAVEDIR}/{datetime.now().strftime('%Y%m%d%H%M%S')}-{start_date.strftime('%Y%m')}.json"
+        logging.info(kiwi.status_code)
+        savefile(result)
         logging.info("Insert DB")
-        db.insert_json(result,kiwi.search_url,store_json_database=False,store_json_file_path=fname)
+        db.insert_json(result,kiwi.search_url)
 
     logging.info("Finished")
