@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List, Dict, Tuple
 
 from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, and_
@@ -24,6 +24,8 @@ class Search(Base):
     search_id: Mapped[str] = mapped_column(primary_key=True)
     url: Mapped[str]
     timestamp: Mapped[datetime] = mapped_column(TIMESTAMP, default=datetime.now)
+    range_start:Mapped[date]
+    range_end:Mapped[date]
     results: Mapped[int]
 
     itineraries: Mapped[List["Itinerary"]] = relationship(back_populates="parent",cascade="all, delete")
@@ -134,14 +136,14 @@ class Database:
         Base.metadata.create_all(self.engine)
         self.session = Session(self.engine)
 
-    def insert_json(self, json_data: dict, url: str = "", timestamp: datetime = None) -> bool:
+    def insert_json(self, json_data: dict, url: str = "", timestamp: datetime = None, range_start:date=None, range_end:date=None) -> bool:
         old_search = self.session.query(Search).get(json_data["search_id"])
         if old_search is not None:
             return False
         if timestamp is None:
             timestamp = datetime.now()
         new_search = Search(search_id=json_data["search_id"], url=url, timestamp=timestamp,
-                            results=json_data["_results"])
+                            results=json_data["_results"], range_start=range_start, range_end=range_end)
         self.session.add(new_search)
         for itinerary in json_data["data"]:
             local_departure = datetime.strptime(itinerary["local_departure"], "%Y-%m-%dT%H:%M:%S.000Z")
