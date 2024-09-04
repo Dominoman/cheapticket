@@ -38,7 +38,7 @@ if __name__ == "__main__":
         while i > 0:
             i -= 1
             logging.info("Search")
-            result = kiwi.search("BUD,VIE", range_start, range_end, "BKK", 5, 18, max_fly_duration=17, max_stopovers=1,
+            result = kiwi.search("BUD,VIE", range_start, range_end, "BKK", 5, 18, max_fly_duration=17, max_stopovers=2,
                                  limit=1000)
             savefile(result)
             if kiwi.status_code == 200:
