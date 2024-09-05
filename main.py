@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-import calendar
 import json
+import logging
 import os
 from datetime import datetime
-
-import logging
 
 from dateutil.relativedelta import relativedelta
 
@@ -14,12 +12,10 @@ from database import Database
 from kiwi import Tequila
 
 
-def savefile(json_data: dict):
-    json_text = json.dumps(json_data, indent=4)
+def savefile(json_data: dict)->None:
     fname = f"{config.SAVEDIR}/{datetime.now().strftime('%Y%m%d%H%M%S')}-{range_start.strftime('%Y%m')}.json"
-
     with open(fname, "w") as fo:
-        fo.write(json_text)
+        json.dumps(json_data,fo,indent=4)
 
 
 if __name__ == "__main__":
@@ -33,10 +29,10 @@ if __name__ == "__main__":
     for _ in range(12):
         range_start = range_start + relativedelta(months=1, day=1)
         range_end = range_start + relativedelta(months=1, days=-1)
-        i = 3
+        max_trying = 10
         print(range_start, range_end)
-        while i > 0:
-            i -= 1
+        while max_trying > 0:
+            max_trying -= 1
             logging.info("Search")
             result = kiwi.search("BUD,VIE", range_start, range_end, "BKK", 5, 18, max_fly_duration=17, max_stopovers=2,
                                  limit=1000)
@@ -44,6 +40,6 @@ if __name__ == "__main__":
             if kiwi.status_code == 200:
                 logging.info("Insert DB")
                 db.insert_json(result, kiwi.search_url, range_start=range_start, range_end=range_end)
-                i = 0
+                break
 
     logging.info("Finished")

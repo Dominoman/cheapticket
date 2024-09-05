@@ -14,7 +14,7 @@ class Base(DeclarativeBase):
             )
             for item in self.__dict__
             if item != "_sa_instance_state"
-            and self.__getattribute__(item) != new_route.__getattribute__(item)
+               and self.__getattribute__(item) != new_route.__getattribute__(item)
         }
 
 
@@ -24,11 +24,11 @@ class Search(Base):
     search_id: Mapped[str] = mapped_column(primary_key=True)
     url: Mapped[str]
     timestamp: Mapped[datetime] = mapped_column(TIMESTAMP, default=datetime.now)
-    range_start:Mapped[date]
-    range_end:Mapped[date]
+    range_start: Mapped[date]
+    range_end: Mapped[date]
     results: Mapped[int]
 
-    itineraries: Mapped[List["Itinerary"]] = relationship(back_populates="parent",cascade="all, delete")
+    itineraries: Mapped[List["Itinerary"]] = relationship(back_populates="parent", cascade="all, delete")
 
 
 itinerary2route_table = Table("itinerary2route", Base.metadata,
@@ -136,7 +136,8 @@ class Database:
         Base.metadata.create_all(self.engine)
         self.session = Session(self.engine)
 
-    def insert_json(self, json_data: dict, url: str = "", timestamp: datetime = None, range_start:date=None, range_end:date=None) -> bool:
+    def insert_json(self, json_data: dict, url: str = "", timestamp: datetime = None, range_start: date = None,
+                    range_end: date = None) -> bool:
         old_search = self.session.query(Search).get(json_data["search_id"])
         if old_search is not None:
             return False
@@ -215,6 +216,5 @@ class Database:
             else:
                 old_route.__setattr__(k, v[1])
 
-    def get_all_search(self)->Query:
+    def get_all_search(self) -> Query:
         return self.session.query(Search)
-
