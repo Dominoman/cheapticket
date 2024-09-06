@@ -15,7 +15,7 @@ from kiwi import Tequila
 def savefile(json_data: dict)->None:
     fname = f"{config.SAVEDIR}/{datetime.now().strftime('%Y%m%d%H%M%S')}-{range_start.strftime('%Y%m')}.json"
     with open(fname, "w") as fo:
-        json.dumps(json_data,fo,indent=4)
+        json.dump(json_data,fo,indent=4)
 
 
 if __name__ == "__main__":
