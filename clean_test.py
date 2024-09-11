@@ -13,7 +13,7 @@ if __name__=="__main__":
     handler = logging.FileHandler(f"{os.path.splitext(__file__)[0]}.log")
     handler.setLevel(logging.DEBUG)
     logging.getLogger('sqlalchemy').addHandler(handler)
-    db = Database(config.DB_FILENAME, False)
+    db = Database(config.DB_FILENAME, config.DB_DEBUG)
     today= datetime.date.today()
     result=db.get_all_search().all()
     for search in tqdm(result,"Processing rows"):

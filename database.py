@@ -1,8 +1,8 @@
 from datetime import datetime, date
 from typing import Optional, List, Dict, Tuple
 
-from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, and_, select, delete
-from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship, Query
+from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, and_, select, delete, exists, not_
+from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship, Query, aliased
 
 
 class Base(DeclarativeBase):
@@ -249,12 +249,19 @@ class Database:
         return self.session.query(Search)
 
     def delete_search(self, search: Search) -> None:
-        # Keressük meg azokat a járatokat, amik az adott searchben vannak, de nincsenek másik searchben
         search_id = search.search_id
-        subquery = select(itinerary2route_table.c.route_id).where(itinerary2route_table.c.search_id != search_id)
-        mainquery = select(itinerary2route_table.c.route_id).where(and_(itinerary2route_table.c.search_id == search_id,
-                                                                        itinerary2route_table.c.route_id.not_in(
-                                                                            subquery.scalar_subquery())))
+
+        # Keressük meg azokat a járatokat, amik az adott searchben vannak, de nincsenek másik searchben
+        t1 = aliased(itinerary2route_table)
+        t2 = aliased(itinerary2route_table)
+
+        subquery = select(1).where(and_(t2.c.route_id==t1.c.route_id,t2.c.search_id!=search_id))
+        mainquery=select(t1.c.route_id).where(and_(t1.c.search_id==search_id, not_(exists(subquery))))
+
+        # subquery = select(itinerary2route_table.c.route_id).where(itinerary2route_table.c.search_id != search_id)
+        # mainquery = select(itinerary2route_table.c.route_id).where(and_(itinerary2route_table.c.search_id == search_id,
+        #                                                                 itinerary2route_table.c.route_id.not_in(
+        #                                                                     subquery.scalar_subquery())))
         result = list(self.session.execute(mainquery).scalars())
 
         delete_history = delete(RouteHistory).where(RouteHistory.route_id.in_(result))
