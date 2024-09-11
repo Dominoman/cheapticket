@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from typing import Optional, List, Dict, Tuple
 
-from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, and_
+from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, and_, select, delete
 from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship, Query
 
 
@@ -28,7 +28,14 @@ class Search(Base):
     range_end: Mapped[date]
     results: Mapped[int]
 
-    itineraries: Mapped[List["Itinerary"]] = relationship(back_populates="parent", cascade="all, delete")
+    itineraries: Mapped[List["Itinerary"]] = relationship(back_populates="parent")
+
+    def __repr__(self):
+        return (
+            f"<Search(search_id={self.search_id!r}, url={self.url!r}, "
+            f"timestamp={self.timestamp!r}, range_start={self.range_start!r}, "
+            f"range_end={self.range_end!r}, results={self.results!r})>"
+        )
 
 
 itinerary2route_table = Table("itinerary2route", Base.metadata,
@@ -81,6 +88,15 @@ class Itinerary(Base):
                                                  secondaryjoin=lambda: itinerary2route_table.c.route_id == Route.id,
                                                  back_populates="itineraries")
 
+    def __repr__(self):
+        return (
+            f"<Itinerary(search_id={self.search_id!r}, id={self.id!r}, "
+            f"flyFrom={self.flyFrom!r}, flyTo={self.flyTo!r}, "
+            f"local_departure={self.local_departure!r}, local_arrival={self.local_arrival!r}, "
+            f"nightsInDest={self.nightsInDest!r}, price={self.price!r}, "
+            f"quality={self.quality!r}, distance={self.distance!r})>"
+        )
+
 
 class Route(Base):
     __tablename__ = "route"
@@ -115,7 +131,16 @@ class Route(Base):
                                                             itinerary2route_table.c.search_id == Itinerary.search_id,
                                                             itinerary2route_table.c.itinerary_id == Itinerary.id),
                                                         back_populates="routes")
-    histories: Mapped[List["RouteHistory"]] = relationship(back_populates="route", cascade="all, delete")
+    histories: Mapped[List["RouteHistory"]] = relationship(back_populates="route")
+
+    def __repr__(self):
+        return (
+            f"<Route(id={self.id!r}, combination_id={self.combination_id!r}, "
+            f"flyFrom={self.flyFrom!r}, flyTo={self.flyTo!r}, "
+            f"local_departure={self.local_departure!r}, local_arrival={self.local_arrival!r}, "
+            f"airline={self.airline!r}, flight_no={self.flight_no!r}, "
+            f"vehicle_type={self.vehicle_type!r})>"
+        )
 
 
 class RouteHistory(Base):
@@ -128,6 +153,12 @@ class RouteHistory(Base):
     newValue: Mapped[str]
 
     route: Mapped[Route] = relationship(back_populates="histories")
+
+    def __repr__(self):
+        return (
+            f"<RouteHistory(route_id={self.route_id!r}, timestamp={self.timestamp!r}, "
+            f"fieldName={self.fieldName!r}, oldValue={self.oldValue!r}, newValue={self.newValue!r})>"
+        )
 
 
 class Database:
@@ -211,10 +242,32 @@ class Database:
             history = RouteHistory(route_id=old_route.id, timestamp=datetime.now(), fieldName=k, oldValue=v[0],
                                    newValue=v[1])
             old_route.histories.append(history)
-            if k in ["local_departure", "local_arrival"]:
-                pass
-            else:
+            if k not in ["local_departure", "local_arrival"]:
                 old_route.__setattr__(k, v[1])
 
     def get_all_search(self) -> Query:
         return self.session.query(Search)
+
+    def delete_search(self, search: Search) -> None:
+        # Keressük meg azokat a járatokat, amik az adott searchben vannak, de nincsenek másik searchben
+        search_id = search.search_id
+        subquery = select(itinerary2route_table.c.route_id).where(itinerary2route_table.c.search_id != search_id)
+        mainquery = select(itinerary2route_table.c.route_id).where(and_(itinerary2route_table.c.search_id == search_id,
+                                                                        itinerary2route_table.c.route_id.not_in(
+                                                                            subquery.scalar_subquery())))
+        result = list(self.session.execute(mainquery).scalars())
+
+        delete_history = delete(RouteHistory).where(RouteHistory.route_id.in_(result))
+        self.session.execute(delete_history)
+
+        delete_i2r = delete(itinerary2route_table).where(itinerary2route_table.c.search_id == search_id)
+        self.session.execute(delete_i2r)
+
+        delete_route = delete(Route).where(Route.id.in_(result))
+        self.session.execute(delete_route)
+
+        delete_itinerary = delete(Itinerary).where(Itinerary.search_id == search_id)
+        self.session.execute(delete_itinerary)
+
+        self.session.delete(search)
+        self.session.rollback()
