@@ -21,4 +21,8 @@ if [ ! -f config.py ] ; then
   echo "Default config created!"
 fi
 
+if [ -f alembic.ini ] ; then
+  alembic upgrade head
+fi
+
 deactivate

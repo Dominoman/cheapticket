@@ -1,7 +1,8 @@
 from datetime import datetime, date
 from typing import Optional, List, Dict, Tuple
 
-from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, and_, select, delete, exists, not_
+from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, and_, select, delete, exists, not_, \
+    Index
 from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship, Query, aliased
 
 
@@ -41,7 +42,9 @@ class Search(Base):
 itinerary2route_table = Table("itinerary2route", Base.metadata,
                               Column("search_id", ForeignKey("itinerary.search_id"), primary_key=True),
                               Column("itinerary_id", ForeignKey("itinerary.id"), primary_key=True),
-                              Column("route_id", ForeignKey("route.id"), primary_key=True))
+                              Column("route_id", ForeignKey("route.id"), primary_key=True),
+                              Index('route_idx','route_id')
+                              )
 
 
 class Itinerary(Base):
