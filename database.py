@@ -254,17 +254,12 @@ class Database:
     def delete_search(self, search: Search) -> None:
         search_id = search.search_id
 
-        # Keressük meg azokat a járatokat, amik az adott searchben vannak, de nincsenek másik searchben
         t1 = aliased(itinerary2route_table)
         t2 = aliased(itinerary2route_table)
 
         subquery = select(1).where(and_(t2.c.route_id==t1.c.route_id,t2.c.search_id!=search_id))
         mainquery=select(t1.c.route_id).where(and_(t1.c.search_id==search_id, not_(exists(subquery))))
 
-        # subquery = select(itinerary2route_table.c.route_id).where(itinerary2route_table.c.search_id != search_id)
-        # mainquery = select(itinerary2route_table.c.route_id).where(and_(itinerary2route_table.c.search_id == search_id,
-        #                                                                 itinerary2route_table.c.route_id.not_in(
-        #                                                                     subquery.scalar_subquery())))
         result = list(self.session.execute(mainquery).scalars())
 
         delete_history = delete(RouteHistory).where(RouteHistory.route_id.in_(result))
@@ -280,4 +275,4 @@ class Database:
         self.session.execute(delete_itinerary)
 
         self.session.delete(search)
-        self.session.rollback()
+        self.session.commit()
