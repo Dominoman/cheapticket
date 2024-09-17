@@ -1,4 +1,4 @@
 APIKEY = "<Your Kiwi api key>"
-DB_FILENAME = "database.db"
+DB_FILENAME = "sqlite:///database.db"
 DB_DEBUG = False
 SAVEDIR = "tmp"

@@ -165,8 +165,8 @@ class RouteHistory(Base):
 
 
 class Database:
-    def __init__(self, file_name: str, debug: bool = False) -> None:
-        self.engine = create_engine(f"sqlite:///{file_name}", echo=debug)
+    def __init__(self, db_url: str, debug: bool = False) -> None:
+        self.engine = create_engine(db_url, echo=debug)
         Base.metadata.create_all(self.engine)
         self.session = Session(self.engine)
 
