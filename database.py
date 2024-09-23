@@ -134,7 +134,6 @@ class Route(Base):
                                                             itinerary2route_table.c.search_id == Itinerary.search_id,
                                                             itinerary2route_table.c.itinerary_id == Itinerary.id),
                                                         back_populates="routes")
-    histories: Mapped[List["RouteHistory"]] = relationship(back_populates="route")
 
     def __repr__(self):
         return (
@@ -143,24 +142,6 @@ class Route(Base):
             f"local_departure={self.local_departure!r}, local_arrival={self.local_arrival!r}, "
             f"airline={self.airline!r}, flight_no={self.flight_no!r}, "
             f"vehicle_type={self.vehicle_type!r})>"
-        )
-
-
-class RouteHistory(Base):
-    __tablename__ = "routehistory"
-
-    route_id: Mapped[str] = mapped_column(ForeignKey("route.id"), primary_key=True)
-    timestamp: Mapped[datetime] = mapped_column(primary_key=True)
-    fieldName: Mapped[str] = mapped_column(primary_key=True)
-    oldValue: Mapped[str]
-    newValue: Mapped[str]
-
-    route: Mapped[Route] = relationship(back_populates="histories")
-
-    def __repr__(self):
-        return (
-            f"<RouteHistory(route_id={self.route_id!r}, timestamp={self.timestamp!r}, "
-            f"fieldName={self.fieldName!r}, oldValue={self.oldValue!r}, newValue={self.newValue!r})>"
         )
 
 
@@ -184,6 +165,7 @@ class Database:
             local_departure = datetime.strptime(itinerary["local_departure"], "%Y-%m-%dT%H:%M:%S.000Z")
             local_arrival = datetime.strptime(itinerary["local_arrival"], "%Y-%m-%dT%H:%M:%S.000Z")
             airlines = ','.join(itinerary["airlines"])
+            # booking_token és a deep_link túl sok helyet foglal, kihagyjuk
             new_itinerary = Itinerary(search_id=json_data["search_id"], id=itinerary["id"],
                                       flyFrom=itinerary["flyFrom"],
                                       flyTo=itinerary["flyTo"], cityFrom=itinerary["cityFrom"],
@@ -199,7 +181,7 @@ class Database:
                                       durationReturn=itinerary["duration"]["return"], price=itinerary["price"],
                                       conversionEUR=itinerary["conversion"]["EUR"],
                                       availabilitySeats=itinerary["availability"]["seats"], airlines=airlines,
-                                      booking_token=itinerary["booking_token"], deep_link=itinerary["deep_link"],
+                                      booking_token='', deep_link='',
                                       facilitated_booking_available=itinerary["facilitated_booking_available"],
                                       pnr_count=itinerary["pnr_count"],
                                       has_airport_change=itinerary["has_airport_change"],
@@ -242,9 +224,6 @@ class Database:
     @staticmethod
     def make_history(old_route: Route, diff: Dict[str, Tuple[str, str]]) -> None:
         for k, v in diff.items():
-            history = RouteHistory(route_id=old_route.id, timestamp=datetime.now(), fieldName=k, oldValue=v[0],
-                                   newValue=v[1])
-            old_route.histories.append(history)
             if k not in ["local_departure", "local_arrival"]:
                 old_route.__setattr__(k, v[1])
 
@@ -261,9 +240,6 @@ class Database:
         mainquery=select(t1.c.route_id).where(and_(t1.c.search_id==search_id, not_(exists(subquery))))
 
         result = list(self.session.execute(mainquery).scalars())
-
-        delete_history = delete(RouteHistory).where(RouteHistory.route_id.in_(result))
-        self.session.execute(delete_history)
 
         delete_i2r = delete(itinerary2route_table).where(itinerary2route_table.c.search_id == search_id)
         self.session.execute(delete_i2r)
