@@ -51,4 +51,4 @@ if __name__ == "__main__":
                 break
 
     logging.info("Finished")
-    print(f"Running kiwi time:{measure_kiwi}, running database time:{measure_db}")
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}Running kiwi time:{measure_kiwi}, running database time:{measure_db}")
