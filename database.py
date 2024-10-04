@@ -2,7 +2,7 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Tuple
 
 from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, and_, select, delete, exists, not_, \
-    Index
+    Index, ForeignKeyConstraint
 from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship, Query, aliased
 
 
@@ -40,10 +40,15 @@ class Search(Base):
 
 
 itinerary2route_table = Table("itinerary2route", Base.metadata,
-                              Column("search_id",String(36), ForeignKey("itinerary.search_id"), primary_key=True),
-                              Column("itinerary_id",String(255), ForeignKey("itinerary.id"), primary_key=True),
+                              Column("search_id",String(36), primary_key=True),
+                              Column("itinerary_id",String(255), primary_key=True),
                               Column("route_id",String(26), ForeignKey("route.id"), primary_key=True),
-                              Index('route_idx','route_id')
+                              Index('route_idx','route_id'),
+                              ForeignKeyConstraint(
+                                  ['search_id','itinerary_id'],
+                                  ['itinerary.search_id','itinerary.id']
+                              )
+
                               )
 
 
@@ -252,3 +257,4 @@ class Database:
 
         self.session.delete(search)
         self.session.commit()
+
