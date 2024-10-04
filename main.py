@@ -4,17 +4,17 @@ import json
 import logging
 import os
 import time
-from datetime import datetime
+import datetime
 
 from dateutil.relativedelta import relativedelta
 
 import config
-from database import Database
+from database import Database, Search
 from kiwi import Tequila
 
 
 def savefile(json_data: dict)->None:
-    fname = f"{config.SAVEDIR}/{datetime.now().strftime('%Y%m%d%H%M%S')}-{range_start.strftime('%Y%m')}.json"
+    fname = f"{config.SAVEDIR}/{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}-{range_start.strftime('%Y%m')}.json"
     with open(fname, "w") as fo:
         json.dump(json_data,fo,indent=4)
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     logging.info("Start")
     kiwi = Tequila(config.APIKEY)
     db = Database(config.DB_FILENAME, config.DB_DEBUG)
-    range_start = datetime.now().date()
+    range_start = datetime.datetime.now().date()
     measure_kiwi=0
     measure_db=0
     for _ in range(12):
@@ -50,5 +50,14 @@ if __name__ == "__main__":
                 measure_db = time_end - time_start if measure_db == 0 else measure_db + time_end - time_start
                 break
 
+    logging.info("Clean Up")
+    clean_up_start=time.time()
+    today = datetime.date.today()
+    result = db.get_all_search().where(Search.range_end < today).all()
+    for search in result:
+        if search.range_end < today:
+            db.delete_search(search)
+    measure_clean_up = time.time()-clean_up_start
+
     logging.info("Finished")
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}Running kiwi time:{measure_kiwi}, running database time:{measure_db}")
+    print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}Running kiwi time:{measure_kiwi}, running database time:{measure_db}, clean up time:{measure_clean_up}")
