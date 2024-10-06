@@ -30,6 +30,6 @@ fi
 #Replace old cron job
 crontab -l | grep -v "cheapticket" > newcron
 echo "0 */6 * * * $(dirname "$0")/bin/python3 /home/laca/workspace/cheapticket/main.py >> /home/laca/workspace/cheapticket/log.log 2>&1" >> newcron
-# crontab newcron
-# rm newcron
+crontab newcron
+rm newcron
 deactivate
