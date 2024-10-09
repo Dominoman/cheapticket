@@ -21,4 +21,4 @@ if __name__ == "__main__":
             timestamp = datetime.strptime(file[:14], "%Y%m%d%H%M%S")
             range_start = datetime.strptime(file[15:21]+"01", "%Y%m%d").date()
             range_end=range_start+relativedelta(months=1,days=-1)
-            db.insert_json(data, timestamp=timestamp, range_start=range_start, range_end=range_end)
+            db.insert_json(data, timestamp=timestamp, range_start=range_start, range_end=range_end, actual=False)

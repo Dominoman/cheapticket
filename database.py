@@ -2,7 +2,7 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Tuple
 
 from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, and_, select, delete, exists, not_, \
-    Index, ForeignKeyConstraint
+    Index, ForeignKeyConstraint, BOOLEAN, Update
 from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship, Query, aliased
 
 
@@ -28,6 +28,7 @@ class Search(Base):
     range_start: Mapped[date]
     range_end: Mapped[date]
     results: Mapped[int]
+    actual: Mapped[bool] = mapped_column(BOOLEAN, default=False, index=True)
 
     itineraries: Mapped[List["Itinerary"]] = relationship(back_populates="parent")
 
@@ -48,7 +49,6 @@ itinerary2route_table = Table("itinerary2route", Base.metadata,
                                   ['search_id','itinerary_id'],
                                   ['itinerary.search_id','itinerary.id']
                               )
-
                               )
 
 
@@ -157,14 +157,14 @@ class Database:
         self.session = Session(self.engine)
 
     def insert_json(self, json_data: dict, url: str = "", timestamp: datetime = None, range_start: date = None,
-                    range_end: date = None) -> bool:
+                    range_end: date = None,actual:bool=True) -> bool:
         old_search = self.session.query(Search).get(json_data["search_id"])
         if old_search is not None:
             return False
         if timestamp is None:
             timestamp = datetime.now()
         new_search = Search(search_id=json_data["search_id"], url=url, timestamp=timestamp,
-                            results=json_data["_results"], range_start=range_start, range_end=range_end)
+                            results=json_data["_results"], range_start=range_start, range_end=range_end, actual=actual)
         self.session.add(new_search)
         for itinerary in json_data["data"]:
             local_departure = datetime.strptime(itinerary["local_departure"], "%Y-%m-%dT%H:%M:%S.000Z")
@@ -258,3 +258,8 @@ class Database:
         self.session.delete(search)
         self.session.commit()
 
+    def clean_actual_flag(self)->None:
+        update=Update(Search).where(Base.metadata.tables["search"].c.actual==True).values(actual=False)
+        print(update)
+        self.session.execute(update)
+        self.session.commit()

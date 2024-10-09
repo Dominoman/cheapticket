@@ -26,6 +26,7 @@ if __name__ == "__main__":
     logging.info("Start")
     kiwi = Tequila(config.APIKEY)
     db = Database(config.DB_FILENAME, config.DB_DEBUG)
+    db.clean_actual_flag()
     range_start = datetime.datetime.now().date()
     measure_kiwi=0
     measure_db=0
