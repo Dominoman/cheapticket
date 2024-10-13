@@ -260,6 +260,5 @@ class Database:
 
     def clean_actual_flag(self)->None:
         update=Update(Search).where(Base.metadata.tables["search"].c.actual==True).values(actual=False)
-        print(update)
         self.session.execute(update)
         self.session.commit()

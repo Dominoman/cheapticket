@@ -33,4 +33,25 @@ crontab -l | grep -v "cheapticket" > newcron
 echo "0 */6 * * * $currentpath/bin/python3 $currentpath/main.py >> $currentpath/log.log 2>&1" >> newcron
 crontab newcron
 rm newcron
+
+#streamlit
+if [ ! -d .streamlit ] ; then
+  mkdir .streamlit
+fi
+
+if [ ! -f .streamlit/config.toml ] ; then
+  streamlit config show > .streamlit/config.toml
+fi
+
+if [ ! -f cheapticket-streamlit.service ] ; then
+  cp cheapticket-streamlit.service.template cheapticket-streamlit.service
+fi
+
+sed -i "s|%currentpath%|$currentpath|g" cheapticket-streamlit.service
+
+if [ ! -f /etc/systemd/system/cheapticket-streamlit.service ] ; then
+  echo "zzz"
+  # sudo ln -s "$currentpath/cheapticket-streamlit.service" /etc/systemd/system/cheapticket-streamlit.service
+fi
+
 deactivate
