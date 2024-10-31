@@ -99,7 +99,7 @@ a[x-apple-data-detectors],
                   <td align="left" style="padding:0;Margin:0;width:250px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="right" style="padding:0;Margin:0"><p class="es-m-txt-c" style="Margin:0;mso-line-height-rule:exactly;font-family:'trebuchet ms', 'lucida grande', 'lucida sans unicode', 'lucida sans', tahoma, sans-serif;line-height:21px;letter-spacing:0;color:#FFFFFF;font-size:14px">2024.10.27 16:35</p><h3 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:20px;font-style:normal;font-weight:bold;line-height:24px;color:#FFFFFF">Flight list</h3></td>
+                      <td align="right" style="padding:0;Margin:0"><p class="es-m-txt-c" style="Margin:0;mso-line-height-rule:exactly;font-family:'trebuchet ms', 'lucida grande', 'lucida sans unicode', 'lucida sans', tahoma, sans-serif;line-height:21px;letter-spacing:0;color:#FFFFFF;font-size:14px">${timestamp}</p><h3 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:20px;font-style:normal;font-weight:bold;line-height:24px;color:#FFFFFF">Flight list</h3></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -141,6 +141,7 @@ a[x-apple-data-detectors],
            </table></td>
          </tr>
        </table>
+% for item in query:
        <table cellpadding="0" cellspacing="0" align="center" class="es-content" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important">
          <tr>
           <td align="center" style="padding:0;Margin:0">
@@ -155,7 +156,7 @@ a[x-apple-data-detectors],
                       <td align="center" style="padding:0;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:'trebuchet ms', 'lucida grande', 'lucida sans unicode', 'lucida sans', tahoma, sans-serif;line-height:21px;letter-spacing:0;color:#3e7d8e;font-size:14px">Departs at</p></td>
                      </tr>
                      <tr>
-                      <td align="center" style="padding:0;Margin:0"><h2 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:28px;font-style:normal;font-weight:bold;line-height:42px;color:#144d62"><strong>2024.22.22</strong></h2><h2 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:28px;font-style:normal;font-weight:bold;line-height:42px;color:#144d62"><strong>03:00 <span style="font-size:14px">PM</span></strong></h2></td>
+                      <td align="center" style="padding:0;Margin:0"><h2 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:28px;font-style:normal;font-weight:bold;line-height:42px;color:#144d62"><strong>${}2024.22.22</strong></h2><h2 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:28px;font-style:normal;font-weight:bold;line-height:42px;color:#144d62"><strong>03:00 <span style="font-size:14px">PM</span></strong></h2></td>
                      </tr>
                      <tr>
                       <td align="center" style="padding:0;Margin:0;padding-bottom:5px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:'trebuchet ms', 'lucida grande', 'lucida sans unicode', 'lucida sans', tahoma, sans-serif;line-height:24px;letter-spacing:0;color:#3e7d8e;font-size:16px"><strong>Dublin</strong></p></td>
@@ -215,7 +216,10 @@ a[x-apple-data-detectors],
              </tr>
            </table></td>
          </tr>
-       </table></td>
+       </table>
+       <br/>
+% endfor
+      </td>
      </tr>
    </table>
   </div>
