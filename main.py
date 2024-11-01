@@ -38,18 +38,23 @@ if __name__ == "__main__":
             max_trying -= 1
             logging.info("Search")
             time_start=time.time()
-            result = kiwi.search("BUD,VIE", range_start, range_end, "BKK", 5, 18, max_fly_duration=17, max_stopovers=2,
+            try:
+                result = kiwi.search("BUD,VIE", range_start, range_end, "BKK", 5, 18, max_fly_duration=17, max_stopovers=2,
                                  limit=1000)
-            savefile(result)
-            time_end=time.time()
-            measure_kiwi=time_end-time_start if measure_kiwi==0 else measure_kiwi+time_end-time_start
-            if kiwi.status_code == 200:
-                logging.info("Insert DB")
-                time_start=time.time()
-                db.insert_json(result, kiwi.search_url, range_start=range_start, range_end=range_end)
+            except Exception as ex:
+                print(ex)
+                print(kiwi.status_code)
+            else:
+                savefile(result)
                 time_end=time.time()
-                measure_db = time_end - time_start if measure_db == 0 else measure_db + time_end - time_start
-                break
+                measure_kiwi=time_end-time_start if measure_kiwi==0 else measure_kiwi+time_end-time_start
+                if kiwi.status_code == 200:
+                    logging.info("Insert DB")
+                    time_start=time.time()
+                    db.insert_json(result, kiwi.search_url, range_start=range_start, range_end=range_end)
+                    time_end=time.time()
+                    measure_db = time_end - time_start if measure_db == 0 else measure_db + time_end - time_start
+                    break
 
     logging.info("Clean Up")
     clean_up_start=time.time()
