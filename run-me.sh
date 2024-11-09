@@ -17,8 +17,8 @@ if [ -f requirements.txt ] ; then
 fi
 
 # Create default config
-if [ ! -f config.py ] ; then
-  cp config.py.template config.py
+if [ ! -f .enc ] ; then
+  cp .env.template .env
   echo "Default config created!"
 fi
 
