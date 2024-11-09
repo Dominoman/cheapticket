@@ -30,9 +30,8 @@ if __name__ == "__main__":
     range_start = datetime.datetime.now().date()
     measure_kiwi=0
     measure_db=0
-    for _ in range(12):
-        range_start = range_start + relativedelta(months=1, day=1)
-        range_end = range_start + relativedelta(months=1, days=-1)
+    for _ in range(13):
+        range_end = range_start + relativedelta(months=1, day=1, days=-1)
         max_trying = 10
         while max_trying > 0:
             max_trying -= 1
@@ -55,6 +54,7 @@ if __name__ == "__main__":
                     time_end=time.time()
                     measure_db = time_end - time_start if measure_db == 0 else measure_db + time_end - time_start
                     break
+        range_start = range_start + relativedelta(months=1, day=1)
 
     logging.info("Clean Up")
     clean_up_start=time.time()
