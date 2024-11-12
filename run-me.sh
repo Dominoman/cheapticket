@@ -29,8 +29,7 @@ fi
 
 #Upgrade the database
 if [ -f alembic.ini ] ; then
-  alembic stamp head
-  # alembic upgrade head
+  alembic upgrade head
 fi
 
 #Replace old cron job
