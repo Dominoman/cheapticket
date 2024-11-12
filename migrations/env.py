@@ -10,7 +10,7 @@ from alembic import context
 from config import DB_FILENAME
 from database import Base
 
-sys.path.append(os.getcwd())
+# sys.path.append(os.getcwd())
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

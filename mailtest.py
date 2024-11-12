@@ -34,5 +34,5 @@ if __name__=="__main__":
     context["query"] = db.session.execute(query).fetchall()
 
     template=Template(filename="templates/template.html").render(**context)
-    server.send_mail("oraveczl@asz.hu","Hello",template,["templates/down.png","templates/up.png","templates/repcsi.jpg","templates/vonal.png"])
+    server.send_mail(config.SMTP_TO,"Hello",template,["templates/down.png","templates/up.png","templates/repcsi.jpg","templates/vonal.png"])
     print("Ok")

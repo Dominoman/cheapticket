@@ -3,6 +3,11 @@
 cd "$(dirname "$0")"
 set -ex
 
+# tmp mappa létrehozása, ha nincs
+if [ ! -d tmp ] ; then
+  mkdir tmp
+fi
+
 # Virtuális környezet létrehozása
 if [ ! -f pyvenv.cfg ] ; then
   python -m venv .
@@ -16,15 +21,16 @@ if [ -f requirements.txt ] ; then
   pip install -r requirements.txt
 fi
 
-# Create default config
-if [ ! -f .enc ] ; then
-  cp .env.template .env
+# Alapértelmezett config létrehozása
+if [ ! -f .env ] ; then
+  cp env.template .env
   echo "Default config created!"
 fi
 
 #Upgrade the database
 if [ -f alembic.ini ] ; then
-  alembic upgrade head
+  alembic stamp head
+  # alembic upgrade head
 fi
 
 #Replace old cron job
