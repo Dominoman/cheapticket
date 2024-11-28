@@ -6,7 +6,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN mkdir tmp
 RUN pip install -r requirements.txt
 RUN alembic upgrade head
 

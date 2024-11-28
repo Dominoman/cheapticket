@@ -69,6 +69,8 @@ class Itinerary(Base):
     countryToName: Mapped[str] = mapped_column(String(50))
     local_departure: Mapped[datetime]
     local_arrival: Mapped[datetime]
+    rlocal_departure: Mapped[Optional[datetime]]
+    rlocal_arrival: Mapped[Optional[datetime]]
     nightsInDest: Mapped[int]
     quality: Mapped[float]
     distance: Mapped[float]
@@ -215,6 +217,11 @@ class Database:
                           vi_connection=route["vi_connection"],
                           guarantee=route["guarantee"], equipment=route["equipment"],
                           vehicle_type=route["vehicle_type"])
+        # set return data to parent record
+        if route["return"]==1:
+            if itinerary_obj.rlocal_departure is None:
+                itinerary_obj.rlocal_departure=local_departure
+            itinerary_obj.rlocal_arrival=local_arrival
 
         old_route = self.session.query(Route).get(route["id"])
         if old_route is None:
@@ -236,6 +243,16 @@ class Database:
         return self.session.query(Search)
 
     def delete_search(self, search: Search) -> None:
+        """
+        Summary:
+        Deletes a search record and its associated itineraries and routes from the database.
+
+        Explanation:
+        This method removes a specified search record along with its related itineraries and routes. It first identifies routes that are not associated with any other searches, deletes the corresponding entries in the itinerary-to-route mapping table, and then deletes the itineraries and routes before finally removing the search record itself.
+
+        Args:
+        - search: The Search object to be deleted.
+        """
         search_id = search.search_id
 
         t1 = aliased(itinerary2route_table)
@@ -259,6 +276,13 @@ class Database:
         self.session.commit()
 
     def clean_actual_flag(self)->None:
+        """
+        Summary:
+        Clears the 'actual' flag for all search records in the database.
+
+        Explanation:
+        This method updates the 'actual' field of all records in the 'search' table, setting it to False for those that are currently marked as True. It executes the update operation and commits the changes to the database.
+        """
         update=Update(Search).where(Base.metadata.tables["search"].c.actual==True).values(actual=False)
         self.session.execute(update)
         self.session.commit()

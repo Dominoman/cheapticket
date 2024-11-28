@@ -13,7 +13,7 @@ from database import Database, Search
 from kiwi import Tequila
 
 
-def savefile(json_data: dict)->None:
+def savefile(json_data: dict,range_start:datetime)->None:
     fname = f"{config.SAVEDIR}/{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}-{range_start.strftime('%Y%m')}.json"
     with open(fname, "w") as fo:
         json.dump(json_data,fo,indent=4)
@@ -44,7 +44,7 @@ if __name__ == "__main__":
                 print(ex)
                 print(kiwi.status_code)
             else:
-                savefile(result)
+                savefile(result,range_start)
                 time_end=time.time()
                 measure_kiwi=time_end-time_start if measure_kiwi==0 else measure_kiwi+time_end-time_start
                 if kiwi.status_code == 200:
