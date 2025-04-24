@@ -39,7 +39,7 @@ if __name__ == "__main__":
             time_start=time.time()
             try:
                 result = kiwi.search("BUD,VIE", range_start, range_end, "BKK", 5, 18, max_fly_duration=17, max_stopovers=2,
-                                 limit=1000)
+                                 limit=1000,hidden_city_ticketing="true")
             except Exception as ex:
                 print(ex)
                 print(kiwi.status_code)
@@ -66,4 +66,4 @@ if __name__ == "__main__":
     measure_clean_up = time.time()-clean_up_start
 
     logging.info("Finished")
-    print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}Running kiwi time:{measure_kiwi}, running database time:{measure_db}, clean up time:{measure_clean_up}")
+    print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}|Running kiwi time:{measure_kiwi}, running database time:{measure_db}, clean up time:{measure_clean_up}")
