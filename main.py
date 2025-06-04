@@ -61,8 +61,7 @@ if __name__ == "__main__":
     today = datetime.date.today()
     result = db.get_all_search().where(Search.range_end < today).all()
     for search in result:
-        if search.range_end < today:
-            db.delete_search(search)
+        db.delete_search(search)
     measure_clean_up = time.time()-clean_up_start
 
     logging.info("Finished")
