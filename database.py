@@ -8,6 +8,7 @@ from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, rela
 
 class Base(DeclarativeBase):
     def compare(self, new_route: 'Base') -> Dict[str, Tuple[str, str]]:
+        """ Compares the attributes of the current instance with those of a new instance."""
         return {
             item: (
                 str(self.__getattribute__(item)),
@@ -52,6 +53,9 @@ class Route(Base):
 
     itinerary: Mapped[List['Itinerary']] = relationship('Itinerary', secondary='itinerary2route', back_populates='route')
 
+    def __repr__(self):
+        return (f"<Route(route_id={self.route_id!r}, flyFrom={self.flyFrom!r}, "
+                f"flyTo={self.flyTo!r}, local_departure={self.local_departure!r})>")
 
 class Search(Base):
     __tablename__ = 'search'
@@ -71,6 +75,9 @@ class Search(Base):
 
     itinerary: Mapped[List['Itinerary']] = relationship('Itinerary', back_populates='search')
 
+    def __repr__(self):
+        return (f"<Search(search_id={self.search_id!r}, url={self.url!r}, "
+                f"timestamp={self.timestamp!r}, actual={self.actual!r})>")
 
 class Itinerary(Base):
     __tablename__ = 'itinerary'
@@ -116,8 +123,12 @@ class Itinerary(Base):
     rlocal_departure: Mapped[Optional[datetime]] = mapped_column(DateTime)
     rlocal_arrival: Mapped[Optional[datetime]] = mapped_column(DateTime)
 
-    search: Mapped['Search'] = relationship('Search', back_populates='itinerary')
-    route: Mapped[List['Route']] = relationship('Route', secondary='itinerary2route', back_populates='itinerary')
+    search: Mapped[Search] = relationship('Search', back_populates='itinerary')
+    route: Mapped[List[Route]] = relationship('Route', secondary='itinerary2route', back_populates='itinerary')
+
+    def __repr__(self):
+        return (f"<Itinerary(itinerary_id={self.itinerary_id!r}, flyFrom={self.flyFrom!r}, "
+                f"flyTo={self.flyTo!r}, price={self.price!r})>")
 
 
 t_itinerary2route = Table(
@@ -129,13 +140,20 @@ t_itinerary2route = Table(
 
 
 class Database:
+    KIWI_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+
     def __init__(self, db_url: str, debug: bool = False) -> None:
         self.engine = create_engine(db_url, echo=debug)
         Base.metadata.create_all(self.engine)
         self.session = Session(self.engine)
+        self.route_cache = {}
 
     def insert_json(self, json_data: dict, url: str = "", timestamp: datetime = None, range_start: date = None,
                     range_end: date = None,actual:bool=True) -> bool:
+        """
+        Inserts a new search and its itineraries and routes into the database from JSON data.
+        Returns False if the search already exists, True if inserted.
+        """
         stmt = select(Search).where(Search.search_id == json_data["search_id"])
         old_search = self.session.execute(stmt).scalar_one_or_none()
         if old_search is not None:
@@ -146,8 +164,8 @@ class Database:
                             results=json_data["_results"], range_start=range_start, range_end=range_end, actual=actual)
         self.session.add(new_search)
         for itinerary in json_data["data"]:
-            local_departure = datetime.strptime(itinerary["local_departure"], "%Y-%m-%dT%H:%M:%S.000Z")
-            local_arrival = datetime.strptime(itinerary["local_arrival"], "%Y-%m-%dT%H:%M:%S.000Z")
+            local_departure = datetime.strptime(itinerary["local_departure"], self.KIWI_DATETIME_FORMAT)
+            local_arrival = datetime.strptime(itinerary["local_arrival"], self.KIWI_DATETIME_FORMAT)
             airlines = ','.join(itinerary["airlines"])
             # booking_token és a deep_link túl sok helyet foglal, kihagyjuk
             new_itinerary = Itinerary(itinerary_id=itinerary["id"],
@@ -179,9 +197,25 @@ class Database:
         self.session.commit()
         return True
 
+    def get_route_from_cache(self, route_id: str) -> Optional[Route]:
+        if route_id in self.route_cache:
+            return self.route_cache[route_id]
+        stmt = select(Route).where(Route.route_id == route_id)
+        route = self.session.execute(stmt).scalar_one_or_none()
+        if route is not None:
+            self.route_cache[route_id] = route
+        return route
+
+    def add_route_to_cache(self, route: Route) -> None:
+        self.route_cache[route.route_id] = route
+
     def add_route(self, itinerary_obj: Itinerary, route: dict) -> bool:
-        local_departure = datetime.strptime(route["local_departure"], "%Y-%m-%dT%H:%M:%S.000Z")
-        local_arrival = datetime.strptime(route["local_arrival"], "%Y-%m-%dT%H:%M:%S.000Z")
+        """
+        Adds a route to the given itinerary, deduplicating by route ID.
+        Updates existing route if changed. Returns True if new, False if existing.
+        """
+        local_departure = datetime.strptime(route["local_departure"], self.KIWI_DATETIME_FORMAT)
+        local_arrival = datetime.strptime(route["local_arrival"], self.KIWI_DATETIME_FORMAT)
         new_route = Route(route_id=route["id"], combination_id=route["combination_id"], flyFrom=route["flyFrom"],
                           flyTo=route["flyTo"], cityFrom=route["cityFrom"], cityCodeFrom=route["cityCodeFrom"],
                           cityTo=route["cityTo"], cityCodeTo=route["cityCodeTo"], local_departure=local_departure,
@@ -200,10 +234,10 @@ class Database:
                 itinerary_obj.rlocal_departure=local_departure
             itinerary_obj.rlocal_arrival=local_arrival
 
-        stmt = select(Route).where(Route.route_id == route["id"])
-        old_route = self.session.execute(stmt).scalar_one_or_none()
+        old_route = self.get_route_from_cache(route["id"])
         if old_route is None:
             itinerary_obj.route.append(new_route)
+            self.add_route_to_cache(new_route)
             return True
         diff = old_route.compare(new_route)
         if len(diff) > 0:
@@ -213,14 +247,23 @@ class Database:
 
     @staticmethod
     def make_history(old_route: Route, diff: Dict[str, Tuple[str, str]]) -> None:
+        """
+        Updates the old route's attributes with new values from the diff dictionary.
+        """
         for k, v in diff.items():
             if k not in ["local_departure", "local_arrival"]:
                 old_route.__setattr__(k, v[1])
 
     def get_all_search(self) -> Query:
+        """
+        Returns a SQLAlchemy Query for all Search records.
+        """
         return self.session.query(Search)
 
     def delete_search(self, search: Search) -> None:
+        """
+        Deletes the given search and all related itineraries and unused routes from the database.
+        """
         itinerary_rowids=[it.rowid for it in search.itinerary]
 
         subselect = (select(t_itinerary2route.c.route_id).
@@ -252,3 +295,9 @@ class Database:
         update=Update(Search).where(Search.actual==True).values(actual=False)
         self.session.execute(update)
         self.session.commit()
+
+    def fill_missing_itineraries(self,itinerary_rowids:list[int]) -> list[Itinerary]:
+        result = []
+        for rowid in itinerary_rowids:
+            result.append(self.session.query(Itinerary).filter(Itinerary.rowid == rowid))
+        return result

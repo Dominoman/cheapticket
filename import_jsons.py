@@ -10,7 +10,6 @@ from config import *
 from database import Database
 
 if __name__ == "__main__":
-
     db = Database(DB_FILENAME, DB_DEBUG)
     all_jsons=[ f for f in os.listdir(SAVEDIR) if f.endswith(".json")]
     pbar = tqdm(all_jsons, desc="Processing json files", unit="file", ncols=100, mininterval=1.0)
