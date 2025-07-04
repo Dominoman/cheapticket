@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Travel Itineraries</title>
+    <style type="text/css">
+        /* Client-specific Styles */
+        #outlook a {padding:0;}
+        body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0;}
+        .ReadMsgBody{width:100%;}
+        .ExternalClass{width:100%;}
+        .backgroundTable{margin:0; padding:0; width:100% !important; line-height: 100% !important;}
+        
+        /* Email styles */
+        table{border-collapse:collapse;}
+        table, td{mso-table-lspace:0pt; mso-table-rspace:0pt;}
+        img{outline:none; text-decoration:none; -ms-interpolation-mode:bicubic;}
+        a img{border:none;}
+        .image_fix{display:block;}
+        
+        /* Responsive styles */
+        @media only screen and (max-width: 600px) {
+            .main-table {width: 100% !important;}
+            .itinerary-card {width: 100% !important; margin-bottom: 20px !important;}
+            .route-price {text-align: center !important;}
+            .detail-grid {width: 100% !important;}
+            .flight-details {width: 100% !important;}
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-family: Arial, sans-serif;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <tr>
+            <td align="center" style="padding: 20px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="600" class="main-table" style="max-width: 600px;">
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="padding: 40px 0; color: white;">
+                            <h1 style="font-size: 36px; font-weight: bold; margin: 0 0 10px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">✈️ Travel Itineraries</h1>
+                            <p style="font-size: 18px; margin: 0; opacity: 0.9;">Discover amazing destinations with our curated travel packages</p>
+                        </td>
+                    </tr>
+
+                    {% for itinerary in itineraries %}
+                    <tr>
+                        <td style="padding: 15px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" class="itinerary-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                                <tr>
+                                    <td class="route-price" style="padding-bottom: 20px; border-bottom: 2px solid #f0f0f0;">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td style="font-size: 24px; font-weight: bold; color: #2d3748;">{{ itinerary.cityFrom }} → {{ itinerary.cityTo }}</td>
+                                                <td align="right" style="font-size: 32px; font-weight: bold; color: #667eea;">{{ itinerary.price | punctuation}} Ft</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 20px 0;">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="detail-grid">
+                                            <tr>
+                                                <td width="50%" style="padding: 10px; vertical-align: top;">
+                                                    <div style="color: #718096; font-size: 14px; margin-bottom: 5px;">Departure</div>
+                                                    <div style="font-size: 18px; font-weight: bold; color: #2d3748;">
+                                                        {{ itinerary.local_departure[:10] }}</div>
+                                                </td>
+                                                <td width="50%" style="padding: 10px; vertical-align: top;">
+                                                    <div style="color: #718096; font-size: 14px; margin-bottom: 5px;">Nights in Destination</div>
+                                                    <div style="font-size: 18px; font-weight: bold; color: #2d3748;">{{ itinerary.nightsInDest }} nights</div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td width="50%" style="padding: 10px; vertical-align: top;">
+                                                    <div style="color: #718096; font-size: 14px; margin-bottom: 5px;">Total Traveling</div>
+                                                    <div style="font-size: 18px; font-weight: bold; color: #2d3748;">{{itinerary.duration.departure | to_time}}</div>
+                                                </td>
+                                                <td width="50%" style="padding: 10px; vertical-align: top;">
+                                                    <div style="color: #718096; font-size: 14px; margin-bottom: 5px;">Transfer Waiting</div>
+                                                    <div style="font-size: 18px; font-weight: bold; color: #2d3748;">xxx hours</div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top: 20px;">
+                                        <div style="font-size: 20px; font-weight: bold; color: #2d3748; margin-bottom: 15px;">✈️ Flight Details</div>
+                                        {% for route in itinerary.route %}
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px;">
+                                            <tr>
+                                                <td style="padding: 20px;">
+                                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                        <tr>
+                                                            <td style="font-weight: bold; color: #2d3748; font-size: 18px;">
+                                                                {{ route.cityFrom }}</td>
+                                                            <td align="center" style="color: #667eea; font-size: 20px;">→</td>
+                                                            <td align="right" style="font-weight: bold; color: #2d3748; font-size: 18px;">{{ route.cityTo }}</td>
+                                                        </tr>
+                                                    </table>
+                                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-top: 15px;" class="flight-details">
+                                                        <tr>
+                                                            <td width="33%" align="center" style="padding: 10px; background: white; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                                                <div style="font-size: 12px; color: #718096; margin-bottom: 5px;">Departure</div>
+                                                                <div style="font-size: 14px; font-weight: bold; color: #2d3748;">
+                                                                    {{ route.local_departure[11:16]}}</div>
+                                                            </td>
+                                                            <td width="33%" align="center" style="padding: 10px; background: white; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                                                <div style="font-size: 12px; color: #718096; margin-bottom: 5px;">Arrival</div>
+                                                                <div style="font-size: 14px; font-weight: bold; color: #2d3748;">{{ route.local_arrival[11:16]}}{{ '+1' if route.local_departure[:10]!=route.local_arrival[:10] else '' }}</div>
+                                                            </td>
+                                                            <td width="33%" align="center" style="padding: 10px; background: white; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                                                <div style="font-size: 12px; color: #718096; margin-bottom: 5px;">Airline</div>
+                                                                <div style="font-size: 14px; font-weight: bold; color: #2d3748;">{{ route.airline }}-{{ route.flight_no }}</div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center" style="padding: 40px 0; color: white;">
+                            <p style="margin: 0; font-size: 14px; opacity: 0.8;">Thank you for choosing our travel services!</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
