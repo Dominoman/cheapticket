@@ -398,12 +398,15 @@ class Database:
                 "duration": {
                     "departure": it.durationDeparture,
                     "return": it.durationReturn,
-                    "total": (it.durationDeparture or 0) + (it.durationReturn or 0)
+                    "total": (it.durationDeparture or 0) + (it.durationReturn or 0),
+                    "waiting_departure":0,
+                    "waiting_return": 0
                 },
                 "price": it.price,
                 "route": [],
                 "route_return": []
             }
+            arrival1=arrival2=''
             for route in it.route:
                 route_json = {
                     "id": route.route_id,
@@ -418,7 +421,13 @@ class Database:
                 }
                 if route._return==0:
                     itinerary_json["route"].append(route_json)
+                    if arrival1!='':
+                        itinerary_json["duration"]['waiting_departure']+= int(route.local_departure.timestamp() - arrival1.timestamp())
+                    arrival1=route.local_arrival
                 else:
                     itinerary_json["route_return"].append(route_json)
+                    if arrival2!='':
+                        itinerary_json["duration"]['waiting_return']+= int(route.local_departure.timestamp() - arrival2.timestamp())
+                    arrival2 = route.local_arrival
             result["itineraries"].append(itinerary_json)
         return result

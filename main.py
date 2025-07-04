@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 import config
 from database import Database, Search
 from kiwi import Tequila
+from stat import send_stat_mail
 
 
 def savefile(json_data: dict,range_start:datetime)->None:
@@ -64,4 +65,5 @@ if __name__ == "__main__":
         db.delete_search(search)
     measure_clean_up = time.time()-clean_up_start
     logging.info(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}|Running kiwi time:{measure_kiwi}, running database time:{measure_db}, clean up time:{measure_clean_up}")
+    send_stat_mail(db, config.SMTP_TO)
     logging.info("Finished")

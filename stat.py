@@ -4,7 +4,7 @@ import os
 import jinja2
 
 import config
-from database import Database
+from database import Database, Itinerary, Search
 from sendmail import sendmail
 
 def punctuation(value):
@@ -25,13 +25,17 @@ def generate_template(itineraries:dict[str,list])->str:
     template = env.get_template('mail.html')
     return template.render(itineraries=itineraries['itineraries'])
 
+def send_stat_mail(db:Database,send_to:str)->None:
+    cheapest_itineraries = (db.session.query(Itinerary)
+                            .join(Itinerary.search)  # or .join(Search) if not using relationship
+                            .filter(Search.actual == 1)
+                            .order_by(Itinerary.price)
+                            .limit(5).all())
+    itineraries = [row.rowid for row in cheapest_itineraries]
+    result = db.fill_missing_itineraries(itineraries)
+    html = generate_template(result)
+    sendmail(send_to, "Itineraries", html)
 
 if __name__ == "__main__":
     db=Database(config.DB_FILENAME,config.DB_DEBUG)
-    itineraries=[2001,2102,2737]
-    result=db.fill_missing_itineraries(itineraries)
-    html=generate_template(result)
-    sendmail("sirrobinofc@gmail.com", "Itineraries",html)
-    with open("tmp\\valami.html","w", encoding="utf-8") as f:
-        f.write(html)
-
+    send_stat_mail(db,config.SMTP_TO)
