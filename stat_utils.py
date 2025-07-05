@@ -37,7 +37,7 @@ def send_stat_mail(db:Database,send_to:str)->None:
     cheapest_itineraries_VIE = (db.session.query(Itinerary)
                             .join(Itinerary.search)  # or .join(Search) if not using relationship
                             .filter(Search.actual == 1)
-                            .filter(Itinerary.flyFrom == "BUD")
+                            .filter(Itinerary.flyFrom == "VIE")
                             .order_by(Itinerary.price)
                             .limit(5).all())
     itineraries += [row.rowid for row in cheapest_itineraries_VIE]
