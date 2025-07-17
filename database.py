@@ -300,79 +300,6 @@ class Database:
         """
         This function must return a json that contain record from this database. The itinerary_rowsids parameter show
         what itinerary must be put in the json
-
-        example:
-        {
-  "itineraries": [{
-            "id": "19ef07565080508a9c9ac440_0|19ef07565080508a9c9ac440_1|19ef07565080508a9c9ac440_2|19ef07565080508a9c9ac440_3",
-            "cityFrom": "B\u00e9cs",
-            "cityTo": "Bangkok",
-            "countryFromName": "Ausztria",
-            "countryToName": "Thaif\u00f6ld",
-            "local_departure": "2026-06-04T11:40:00.000Z",
-            "local_arrival": "2026-06-05T06:30:00.000Z",
-            "nightsInDest": 9,
-            "quality": 978.955086,
-            "distance": 8459.64,
-            "duration": {
-                "departure": 49800,
-                "return": 52200,
-                "total": 102000
-            },
-            "price": 285332.0001,
-            "airlines": [
-                "EY"
-            ],
-            "route": [
-                {
-                    "id": "19ef07565080508a9c9ac440_0",
-                    "combination_id": "19ef07565080508a9c9ac440",
-                    "cityFrom": "B\u00e9cs",
-                    "cityTo": "Abu-Dzabi",
-                    "local_departure": "2026-06-04T11:40:00.000Z",
-                    "local_arrival": "2026-06-04T19:10:00.000Z",
-                    "airline": "EY",
-                    "flight_no": 154,
-                    "return": 0
-                },
-                {
-                    "id": "19ef07565080508a9c9ac440_1",
-                    "combination_id": "19ef07565080508a9c9ac440",
-                    "cityFrom": "Abu-Dzabi",
-                    "cityTo": "Bangkok",
-                    "local_departure": "2026-06-04T21:05:00.000Z",
-                    "local_arrival": "2026-06-05T06:30:00.000Z",
-                    "airline": "EY",
-                    "flight_no": 402,
-                    "return": 0
-                },
-                {
-                    "id": "19ef07565080508a9c9ac440_2",
-                    "combination_id": "19ef07565080508a9c9ac440",
-                    "cityFrom": "Bangkok",
-                    "cityTo": "Abu-Dzabi",
-                    "local_departure": "2026-06-14T20:55:00.000Z",
-                    "local_arrival": "2026-06-15T00:35:00.000Z",
-                    "airline": "EY",
-                    "flight_no": 407,
-                    "return": 1
-                },
-                {
-                    "id": "19ef07565080508a9c9ac440_3",
-                    "combination_id": "19ef07565080508a9c9ac440",
-                    "cityFrom": "Abu-Dzabi",
-                    "cityTo": "B\u00e9cs",
-                    "cityCodeTo": "VIE",
-                    "local_departure": "2026-06-15T02:25:00.000Z",
-                    "local_arrival": "2026-06-15T06:25:00.000Z",
-                    "airline": "EY",
-                    "flight_no": 153,
-                    "return": 1
-                }
-            ]
-        }
-  ]
-}
         """
         itineraries = (
             self.session.query(Itinerary)
@@ -387,10 +314,10 @@ class Database:
                 "cityTo": it.cityTo,
                 "countryFromName": it.countryFromName,
                 "countryToName": it.countryToName,
-                "local_departure": it.local_departure.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                "local_arrival": it.local_arrival.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                "rlocal_departure": it.rlocal_departure.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                "rlocal_arrival": it.rlocal_arrival.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                "local_departure": it.local_departure.strftime(self.KIWI_DATETIME_FORMAT),
+                "local_arrival": it.local_arrival.strftime(self.KIWI_DATETIME_FORMAT),
+                "rlocal_departure": it.rlocal_departure.strftime(self.KIWI_DATETIME_FORMAT),
+                "rlocal_arrival": it.rlocal_arrival.strftime(self.KIWI_DATETIME_FORMAT),
 
                 "nightsInDest": it.nightsInDest,
                 "quality": it.quality,
@@ -413,8 +340,8 @@ class Database:
                     "combination_id": route.combination_id,
                     "cityFrom": route.cityFrom,
                     "cityTo": route.cityTo,
-                    "local_departure": route.local_departure.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                    "local_arrival": route.local_arrival.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                    "local_departure": route.local_departure.strftime(self.KIWI_DATETIME_FORMAT),
+                    "local_arrival": route.local_arrival.strftime(self.KIWI_DATETIME_FORMAT),
                     "airline": route.airline,
                     "flight_no": route.flight_no,
                     "return": route._return

@@ -38,7 +38,7 @@
                     <tr>
                         <td align="center" style="padding: 40px 0; color: white;">
                             <h1 style="font-size: 36px; font-weight: bold; margin: 0 0 10px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">✈️ Utazás Bangkokba</h1>
-                            <p style="font-size: 18px; margin: 0; opacity: 0.9;">xxx</p>
+                            <!-- <p style="font-size: 18px; margin: 0; opacity: 0.9;">xxx</p> -->
                         </td>
                     </tr>
 
@@ -94,10 +94,10 @@
                                                 <td style="padding: 20px;">
                                                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                                         <tr>
-                                                            <td style="font-weight: bold; color: #2d3748; font-size: 18px;">
-                                                                {{ route.cityFrom }}</td>
+                                                            <td style="font-weight: bold; color: #2d3748; font-size: 18px;">{{ route.cityFrom }}</td>
                                                             <td align="center" style="color: #667eea; font-size: 20px;">→</td>
                                                             <td align="right" style="font-weight: bold; color: #2d3748; font-size: 18px;">{{ route.cityTo }}</td>
+                                                            <td align="right"><img src="cid:{{ route.airline }}" alt="{{ route.airline }}"></td>
                                                         </tr>
                                                     </table>
                                                     <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-top: 15px;" class="flight-details">
@@ -171,10 +171,10 @@
                                                 <td style="padding: 20px;">
                                                     <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                                         <tr>
-                                                            <td style="font-weight: bold; color: #2d3748; font-size: 18px;">
-                                                                {{ route.cityFrom }}</td>
+                                                            <td style="font-weight: bold; color: #2d3748; font-size: 18px;">{{ route.cityFrom }}</td>
                                                             <td align="center" style="color: #667eea; font-size: 20px;">→</td>
                                                             <td align="right" style="font-weight: bold; color: #2d3748; font-size: 18px;">{{ route.cityTo }}</td>
+                                                            <td align="right"><img src="cid:{{ route.airline }}" alt="{{ route.airline }}"></td>
                                                         </tr>
                                                     </table>
                                                     <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-top: 15px;" class="flight-details">
