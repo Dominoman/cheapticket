@@ -3,7 +3,7 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import config
+from config.config import config
 
 
 def sendmail(to, subject, body,attachments:dict[str,str]=None):

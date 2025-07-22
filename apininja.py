@@ -2,7 +2,7 @@ import os.path
 
 import requests
 
-import config
+from config.config import config
 
 
 class Ninja:
@@ -30,6 +30,9 @@ class Ninja:
         Returns:
             str: The URL of the airline's logo.
         """
+        if not os.path.exists(self.cache_dir):
+            os.makedirs(self.cache_dir)
+
         cache_file = f"{self.cache_dir}/{airline_code}.jpg"
         if cached:
             if os.path.exists(cache_file):

@@ -4,7 +4,7 @@ import datetime
 
 from tqdm import tqdm
 
-import config
+from config.config import config
 from database import Database, Search
 
 if __name__ == "__main__":

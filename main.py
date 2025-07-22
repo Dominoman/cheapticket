@@ -8,13 +8,15 @@ import datetime
 
 from dateutil.relativedelta import relativedelta
 
-import config
+from config.config import config
 from database import Database, Search
 from kiwi import Tequila
 from stat_utils import send_stat_mail
 
 
 def savefile(json_data: dict,range_start:datetime)->None:
+    if not os.path.exists(config.SAVEDIR):
+        os.makedirs(config.SAVEDIR)
     fname = f"{config.SAVEDIR}/{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}-{range_start.strftime('%Y%m')}.json"
     with open(fname, "w") as fo:
         json.dump(json_data,fo,indent=4)

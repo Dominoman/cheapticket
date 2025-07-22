@@ -1,6 +1,6 @@
 from sqlalchemy import func
 
-import config
+from config.config import config
 from database import Database, Search
 
 if __name__ == "__main__":

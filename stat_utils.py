@@ -4,7 +4,7 @@ import os
 
 import jinja2
 
-import config
+from config.config import config
 from database import Database, Itinerary, Search
 from sendmail import sendmail
 from apininja import Ninja
