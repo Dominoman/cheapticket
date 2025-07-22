@@ -74,9 +74,10 @@ def send_stat_mail(db:Database,send_to:str)->None:
     itineraries += [row.rowid for row in cheapest_itineraries_VIE]
 
     result = db.fill_missing_itineraries(itineraries)
+    result["itineraries"].sort(key=lambda x:x['price'])
     logos = collect_logos(result)
     html = generate_template(result)
-    subject = f"Bangkok repülővel {datetime.date.today().strftime('%Y-%m-%d')}"
+    subject = f"Bangkok repülővel {int(result['itineraries'][0]['price']):,} Ft"
     sendmail(send_to, subject, html,logos)
 
 if __name__=="__main__":
