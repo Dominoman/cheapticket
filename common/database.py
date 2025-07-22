@@ -84,7 +84,8 @@ class Itinerary(Base):
     __table_args__ = (
         UniqueConstraint('search_id', 'itinerary_id'),
         Index('ix_itinerary_price', 'price'),
-        Index('ix_itinerary_search_itinerary_id', 'search_id', 'itinerary_id', unique=True)
+        Index('ix_itinerary_search_itinerary_id', 'search_id', 'itinerary_id', unique=True),
+        Index('ix_itinerary_itinerary_id', 'itinerary_id')
     )
 
     rowid: Mapped[int] = mapped_column(Integer, primary_key=True)
