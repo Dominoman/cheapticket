@@ -1,5 +1,3 @@
-import os
-import sys
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -8,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from config import DB_FILENAME
-from database import Base
+from common.database import Base
 
 # sys.path.append(os.getcwd())
 

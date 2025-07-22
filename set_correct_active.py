@@ -1,7 +1,7 @@
 from sqlalchemy import func
 
 from config.config import config
-from database import Database, Search
+from common.database import Database, Search
 
 if __name__ == "__main__":
     db=Database(config.DB_FILENAME, config.DB_DEBUG)

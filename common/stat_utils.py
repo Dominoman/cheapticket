@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 import datetime
 import os
+from pathlib import Path
 
 import jinja2
 
 from config.config import config
-from database import Database, Itinerary, Search
-from sendmail import sendmail
-from apininja import Ninja
+from common.database import Database, Itinerary, Search
+from common.sendmail import sendmail
+from common.apininja import Ninja
 
 def punctuation(value):
     return '{:,.0f}'.format(value).replace(',', '.')
@@ -20,7 +21,7 @@ def to_time(value):
     return f"{int(hours):02}:{int(minutes):02}"
 
 def generate_template(itineraries:dict[str,list])->str:
-    template_dir = os.path.join(os.path.dirname(__file__), 'template')
+    template_dir = os.path.join(Path(__file__).resolve().parent.parent, 'template')
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
     env.filters['punctuation'] = punctuation
     env.filters['to_time'] = to_time
@@ -69,6 +70,3 @@ def send_stat_mail(db:Database,send_to:str)->None:
     subject = f"Bangkok repülővel {datetime.date.today().strftime('%Y-%m-%d')}"
     sendmail(send_to, subject, html,logos)
 
-if __name__ == "__main__":
-    db=Database(config.DB_FILENAME,config.DB_DEBUG)
-    send_stat_mail(db,config.SMTP_TO)

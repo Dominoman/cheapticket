@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 from tqdm import tqdm
 
 from config.config import config
-from database import Database
+from common.database import Database
 
 if __name__ == "__main__":
     db = Database(config.DB_FILENAME, config.DB_DEBUG)

@@ -25,6 +25,3 @@ def sendmail(to, subject, body,attachments:dict[str,str]=None):
     server.send_message(msg)
     server.quit()
 
-if __name__ == "__main__":
-    imgs = {"BR": "BR.jpg"}
-    sendmail("sirrobinofc@gmail.com", "Test Subject", "<html><body><h1>Test Email</h1><p>This is a test email.<img src='cid:BR' alt='BR'></p></body></html>",imgs)

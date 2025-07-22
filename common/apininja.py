@@ -2,8 +2,6 @@ import os.path
 
 import requests
 
-from config.config import config
-
 
 class Ninja:
     def __init__(self, api_key,cache_dir:str):
@@ -47,6 +45,3 @@ class Ninja:
         else:
             raise Exception(f"Error fetching logo: {response.status_code} - {response.text}")
 
-if __name__=="__main__":
-    ninja = Ninja(config.APININJASKEY, config.LOGOS)
-    print(ninja.get_logo("BR"))

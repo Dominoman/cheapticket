@@ -5,7 +5,7 @@ import datetime
 from tqdm import tqdm
 
 from config.config import config
-from database import Database, Search
+from common.database import Database, Search
 
 if __name__ == "__main__":
     today = datetime.date.today()
