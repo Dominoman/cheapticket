@@ -38,7 +38,7 @@
                     <tr>
                         <td align="center" style="padding: 40px 0; color: white;">
                             <h1 style="font-size: 36px; font-weight: bold; margin: 0 0 10px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">✈️ Utazás Bangkokba</h1>
-                            <!-- <p style="font-size: 18px; margin: 0; opacity: 0.9;">xxx</p> -->
+                            <p style="font-size: 18px; margin: 0; opacity: 0.9;">Legjobb ajánlatok</p>
                         </td>
                     </tr>
 
@@ -51,7 +51,7 @@
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                             <tr>
                                                 <td style="font-size: 24px; font-weight: bold; color: #2d3748;">{{ itinerary.cityFrom }} → {{ itinerary.cityTo }}</td>
-                                                <td align="right" style="font-size: 32px; font-weight: bold; color: #667eea;">{{ itinerary.price | punctuation}} Ft</td>
+                                                <td align="right" style="font-size: 32px; font-weight: bold; color: #667eea;">{{ (itinerary.price-itinerary.latest_price)|up_n_down }} {{ itinerary.price | punctuation}} Ft</td>
                                             </tr>
                                         </table>
                                     </td>
@@ -209,7 +209,7 @@
                     <!-- Footer -->
                     <tr>
                         <td align="center" style="padding: 40px 0; color: white;">
-                            <p style="margin: 0; font-size: 14px; opacity: 0.8;">xxx</p>
+                            <p style="margin: 0; font-size: 14px; opacity: 0.8;">(C) 2025</p>
                         </td>
                     </tr>
                 </table>

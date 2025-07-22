@@ -20,11 +20,20 @@ def to_time(value):
     minutes, seconds = divmod(remainder, 60)
     return f"{int(hours):02}:{int(minutes):02}"
 
+def up_n_down(value):
+    if value > 0:
+        return '<span style="color:red;">&#8593;</span>'
+    elif value < 0:
+        return '<span style="color:green;">&#8595;</span>'
+    else:
+        return ''
+
 def generate_template(itineraries:dict[str,list])->str:
     template_dir = os.path.join(Path(__file__).resolve().parent.parent, 'template')
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
     env.filters['punctuation'] = punctuation
     env.filters['to_time'] = to_time
+    env.filters['up_n_down'] = up_n_down
     template = env.get_template('mail.html')
     return template.render(itineraries=itineraries['itineraries'])
 
@@ -70,3 +79,7 @@ def send_stat_mail(db:Database,send_to:str)->None:
     subject = f"Bangkok repülővel {datetime.date.today().strftime('%Y-%m-%d')}"
     sendmail(send_to, subject, html,logos)
 
+if __name__=="__main__":
+    db = Database(config.DB_FILENAME,config.DB_DEBUG)
+    send_stat_mail(db, config.SMTP_TO)
+    print("Stat mail sent.")

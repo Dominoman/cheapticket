@@ -2,8 +2,8 @@
 Ticket hunter with kiwi
 
 ## TODO
-- Separate BUD and VIE search??
-- Generate statistics
-- Send email
+- 5 biggest price drops
+- website
+- AI ?
 
-xxx
+![Alt text](images/screen1.png)

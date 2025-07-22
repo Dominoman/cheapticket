@@ -309,6 +309,16 @@ class Database:
         )
         result = {"itineraries": []}
         for it in itineraries:
+            price_subquery = (
+                self.session.query(Itinerary.price)
+                .join(Search, Itinerary.search_id == Search.rowid)
+                .filter(Itinerary.itinerary_id == it.itinerary_id, Search.actual == False)
+                .order_by(Search.timestamp.desc())
+                .limit(1)
+            )
+            latest_price = price_subquery.scalar()
+
+
             itinerary_json = {
                 "id": it.itinerary_id,
                 "cityFrom": it.cityFrom,
@@ -331,6 +341,7 @@ class Database:
                     "waiting_return": 0
                 },
                 "price": it.price,
+                "latest_price": latest_price if latest_price is not None else it.price,
                 "route": [],
                 "route_return": []
             }
