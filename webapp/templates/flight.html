@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block container %}
+        <div class="itineraries-grid">
+            <div class="itinerary-card">
+                <div class="itinerary-header">
+                    <div class="route">New York → Paris</div>
+                    <div class="price">$1,299</div>
+                </div>
+
+                <div class="itinerary-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Departure</div>
+                        <div class="detail-value">2024-06-15</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Nights in Destination</div>
+                        <div class="detail-value">7 nights</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Total Traveling</div>
+                        <div class="detail-value">9 days</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Transfer Waiting</div>
+                        <div class="detail-value">2 hours</div>
+                    </div>
+                </div>
+
+                <div class="flights-section">
+                    <div class="flights-header">
+                        ✈️ Flight Details
+                    </div>
+                    <div class="flight-card">
+                        <div class="flight-route">
+                            <div class="flight-city">New York (JFK)</div>
+                            <div class="flight-arrow">→</div>
+                            <div class="flight-city">Paris (CDG)</div>
+                        </div>
+                        <div class="flight-details">
+                            <div class="flight-detail">
+                                <div class="flight-detail-label">Departure</div>
+                                <div class="flight-detail-value">10:30 PM</div>
+                            </div>
+                            <div class="flight-detail">
+                                <div class="flight-detail-label">Arrival</div>
+                                <div class="flight-detail-value">12:45 PM+1</div>
+                            </div>
+                            <div class="flight-detail">
+                                <div class="flight-detail-label">Airline</div>
+                                <div class="flight-detail-value">Air France</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flight-card">
+                        <div class="flight-route">
+                            <div class="flight-city">Paris (CDG)</div>
+                            <div class="flight-arrow">→</div>
+                            <div class="flight-city">New York (JFK)</div>
+                        </div>
+                        <div class="flight-details">
+                            <div class="flight-detail">
+                                <div class="flight-detail-label">Departure</div>
+                                <div class="flight-detail-value">2:15 PM</div>
+                            </div>
+                            <div class="flight-detail">
+                                <div class="flight-detail-label">Arrival</div>
+                                <div class="flight-detail-value">5:30 PM</div>
+                            </div>
+                            <div class="flight-detail">
+                                <div class="flight-detail-label">Airline</div>
+                                <div class="flight-detail-value">Delta Airlines</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

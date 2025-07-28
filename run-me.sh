@@ -44,4 +44,23 @@ echo "0 */6 * * * $currentpath/bin/python3 $currentpath/main.py >> $currentpath/
 crontab newcron
 rm newcron
 
+currentpath=$(pwd)
+username=$(whoami)
+groupname=$(id -gn)
+servicename="cheapticket-web"
+
+if [ ! -f $servicename.service ] ; then
+  cp $servicename.service.template $servicename.service
+  sed -i "s|%currentpath%|$currentpath|g; s|%username%|$username|g; s|%groupname%|$groupname|g" $servicename.service
+fi
+
+if [ ! -f /etc/systemd/system/$servicename.service ] ; then
+  sudo ln -s "$currentpath/$servicename.service" /etc/systemd/system/$servicename.service
+fi
+
+# Restart gunicorn
+sudo systemctl daemon-reload
+sudo systemctl enable $servicename
+sudo systemctl restart $servicename
+
 deactivate

@@ -1,0 +1,13 @@
+[Unit]
+Description=Cheapticket-web flask app
+After=network.target
+
+[Service]
+User=%username%
+Group=%groupname%
+WorkingDirectory=%currentpath%
+ExecStart=%currentpath%/bin/gunicorn --workers 2 --bind 0.0.0.0:5000 --timeout 240 main:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
