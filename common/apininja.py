@@ -31,7 +31,7 @@ class Ninja:
         if not os.path.exists(self.cache_dir):
             os.makedirs(self.cache_dir)
 
-        cache_file = f"{self.cache_dir}/{airline_code}.jpg"
+        cache_file = f"{self.cache_dir}/{airline_code}.png"
         if cached:
             if os.path.exists(cache_file):
                 return cache_file
