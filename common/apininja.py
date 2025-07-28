@@ -39,9 +39,13 @@ class Ninja:
         response = requests.get(f"https://api.api-ninjas.com/v1/airlines?iata={airline_code}",
                                 headers={'X-Api-Key': self.api_key})
         if response.status_code == 200:
-            logo_url = response.json()[0]["logo_url"]
-            self.download_url(logo_url, cache_file)
-            return cache_file
+            data = response.json()[0]
+            if "logo_url" in data:
+                logo_url = data["logo_url"]
+                self.download_url(logo_url, cache_file)
+                return cache_file
+            else:
+                return f"{self.cache_dir}/nologo.png"
         else:
             raise Exception(f"Error fetching logo: {response.status_code} - {response.text}")
 
