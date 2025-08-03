@@ -3,75 +3,112 @@
         <div class="itineraries-grid">
             <div class="itinerary-card">
                 <div class="itinerary-header">
-                    <div class="route">New York → Paris</div>
-                    <div class="price">$1,299</div>
+                    <div class="route">{{ itinerary.cityFrom }} → {{ itinerary.cityTo }}</div>
+                    <div class="price">{{ itinerary.price|punctuation }} Ft</div>
                 </div>
 
                 <div class="itinerary-details">
                     <div class="detail-item">
-                        <div class="detail-label">Departure</div>
-                        <div class="detail-value">2024-06-15</div>
+                        <div class="detail-label">Indulás</div>
+                        <div class="detail-value">{{ itinerary.local_departure[:10] }}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Nights in Destination</div>
-                        <div class="detail-value">7 nights</div>
+                        <div class="detail-label">Eltöltött éjszakák</div>
+                        <div class="detail-value">{{ itinerary.nightsInDest }} éjszaka</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Total Traveling</div>
-                        <div class="detail-value">9 days</div>
+                        <div class="detail-label">Utazási idő</div>
+                        <div class="detail-value">{{itinerary.duration.departure | to_time}}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Transfer Waiting</div>
-                        <div class="detail-value">2 hours</div>
+                        <div class="detail-label">Várakozási idő</div>
+                        <div class="detail-value">{{ itinerary.duration.waiting_departure | to_time }}</div>
                     </div>
                 </div>
 
                 <div class="flights-section">
                     <div class="flights-header">
-                        ✈️ Flight Details
+                        ✈️ Részletek
                     </div>
+                    {% for route in itinerary.route %}
                     <div class="flight-card">
                         <div class="flight-route">
-                            <div class="flight-city">New York (JFK)</div>
+                            <div class="flight-city">{{ route.cityFrom }}</div>
                             <div class="flight-arrow">→</div>
-                            <div class="flight-city">Paris (CDG)</div>
+                            <div class="flight-city">{{ route.cityTo }}</div>
+                            <!-- image come here -->
                         </div>
                         <div class="flight-details">
                             <div class="flight-detail">
-                                <div class="flight-detail-label">Departure</div>
-                                <div class="flight-detail-value">10:30 PM</div>
+                                <div class="flight-detail-label">Indulás</div>
+                                <div class="flight-detail-value">{{ route.local_departure[11:16]}}</div>
                             </div>
                             <div class="flight-detail">
-                                <div class="flight-detail-label">Arrival</div>
-                                <div class="flight-detail-value">12:45 PM+1</div>
+                                <div class="flight-detail-label">Érkezés</div>
+                                <div class="flight-detail-value">{{ route.local_arrival[11:16]}}{{ '+1' if route.local_departure[:10]!=route.local_arrival[:10] else '' }}</div>
                             </div>
                             <div class="flight-detail">
-                                <div class="flight-detail-label">Airline</div>
-                                <div class="flight-detail-value">Air France</div>
+                                <div class="flight-detail-label">Járat</div>
+                                <div class="flight-detail-value">{{ route.airline }}-{{ route.flight_no }}</div>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
+                </div>
+
+                <!-- return -->
+
+                <div class="itinerary-header">
+                    <div class="route">{{ itinerary.cityTo }} → {{ itinerary.cityFrom }}</div>
+                </div>
+
+                <div class="itinerary-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Indulás</div>
+                        <div class="detail-value">{{ itinerary.rlocal_departure[:10] }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"></div>
+                        <div class="detail-value"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Utazási idő</div>
+                        <div class="detail-value">{{itinerary.duration.return | to_time}}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Várakozási idő</div>
+                        <div class="detail-value">{{ itinerary.duration.waiting_return | to_time }}</div>
+                    </div>
+                </div>
+
+                <div class="flights-section">
+                    <div class="flights-header">
+                        ✈️ Részletel
+                    </div>
+                    {% for route in itinerary.route_return %}
                     <div class="flight-card">
                         <div class="flight-route">
-                            <div class="flight-city">Paris (CDG)</div>
+                            <div class="flight-city">{{ route.cityFrom }}</div>
                             <div class="flight-arrow">→</div>
-                            <div class="flight-city">New York (JFK)</div>
+                            <div class="flight-city">{{ route.cityTo }}</div>
+                            <!-- image come here -->
                         </div>
                         <div class="flight-details">
                             <div class="flight-detail">
-                                <div class="flight-detail-label">Departure</div>
-                                <div class="flight-detail-value">2:15 PM</div>
+                                <div class="flight-detail-label">Indulás</div>
+                                <div class="flight-detail-value">{{ route.local_departure[11:16]}}</div>
                             </div>
                             <div class="flight-detail">
-                                <div class="flight-detail-label">Arrival</div>
-                                <div class="flight-detail-value">5:30 PM</div>
+                                <div class="flight-detail-label">Érkezés</div>
+                                <div class="flight-detail-value">{{ route.local_arrival[11:16]}}{{ '+1' if route.local_departure[:10]!=route.local_arrival[:10] else '' }}</div>
                             </div>
                             <div class="flight-detail">
-                                <div class="flight-detail-label">Airline</div>
-                                <div class="flight-detail-value">Delta Airlines</div>
+                                <div class="flight-detail-label">Járat</div>
+                                <div class="flight-detail-value">{{ route.airline }}-{{ route.flight_no }}</div>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

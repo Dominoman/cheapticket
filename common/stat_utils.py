@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-import datetime
 import os
 from pathlib import Path
 
 import jinja2
 
-from config.config import config
+from common.apininja import Ninja
 from common.database import Database, Itinerary, Search
 from common.sendmail import sendmail
-from common.apininja import Ninja
+from config.config import config
+
 
 def punctuation(value):
     return '{:,.0f}'.format(value).replace(',', '.')
@@ -59,14 +59,14 @@ def collect_logos(itineraries:dict[str,list])->dict[str,str]:
 
 def send_stat_mail(db:Database,send_to:str)->None:
     cheapest_itineraries_BUD = (db.session.query(Itinerary)
-                            .join(Itinerary.search)  # or .join(Search) if not using relationship
+                            .join(Itinerary.search)
                             .filter(Search.actual == 1)
                             .filter(Itinerary.flyFrom == "BUD")
                             .order_by(Itinerary.price)
                             .limit(5).all())
     itineraries = [row.rowid for row in cheapest_itineraries_BUD]
     cheapest_itineraries_VIE = (db.session.query(Itinerary)
-                            .join(Itinerary.search)  # or .join(Search) if not using relationship
+                            .join(Itinerary.search)
                             .filter(Search.actual == 1)
                             .filter(Itinerary.flyFrom == "VIE")
                             .order_by(Itinerary.price)
