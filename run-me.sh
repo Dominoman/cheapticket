@@ -8,11 +8,6 @@ if [ ! -d tmp ] ; then
   mkdir tmp
 fi
 
-# logos mappa létrehozása, ha nincs
-if [ ! -d logos ] ; then
-  mkdir logos
-fi
-
 # Virtuális környezet létrehozása
 if [ ! -f pyvenv.cfg ] ; then
   python -m venv .
