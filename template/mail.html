@@ -50,7 +50,7 @@
                                     <td class="route-price" style="padding-bottom: 20px; border-bottom: 2px solid #f0f0f0;">
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                             <tr>
-                                                <td style="font-size: 24px; font-weight: bold; color: #2d3748;">{{ itinerary.cityFrom }} → {{ itinerary.cityTo }}</td>
+                                                <td style="font-size: 24px; font-weight: bold; color: #2d3748;"><a href="https://banana4.ddns.net/flight/{{ itinerary.id }}">{{ itinerary.cityFrom }} → {{ itinerary.cityTo }}</a></td>
                                                 <td align="right" style="font-size: 32px; font-weight: bold; color: #667eea;">{{ (itinerary.price-itinerary.latest_price)|up_n_down }} {{ itinerary.price | punctuation}} Ft</td>
                                             </tr>
                                         </table>
@@ -127,7 +127,7 @@
                                     <td class="route-price" style="padding-bottom: 20px; border-bottom: 2px solid #f0f0f0;">
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                             <tr>
-                                                <td style="font-size: 24px; font-weight: bold; color: #2d3748;">{{ itinerary.cityTo }} → {{ itinerary.cityFrom }}</td>
+                                                <td style="font-size: 24px; font-weight: bold; color: #2d3748;"><a href="https://banana4.ddns.net/flight/{{ itinerary.id }}">{{ itinerary.cityTo }} → {{ itinerary.cityFrom }}</a></td>
                                                 <td align="right" style="font-size: 32px; font-weight: bold; color: #667eea;"></td>
                                             </tr>
                                         </table>
