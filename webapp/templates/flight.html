@@ -110,6 +110,26 @@
                     </div>
                     {% endfor %}
                 </div>
+                 <div class="flights-header">
+                        Árgrafikon
+                    </div>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <canvas id="myChart"></canvas>
+                <script>
+                const ctx = document.getElementById('myChart').getContext('2d');
+                const myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: {{ labels|tojson }},
+                        datasets: [{
+                            label: 'Price',
+                            data: {{ prices|tojson }},
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            fill: false
+                        }]
+                    }
+                });
+                </script>
             </div>
         </div>
 {% endblock %}
