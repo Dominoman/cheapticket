@@ -36,7 +36,7 @@
                             <div class="flight-city">{{ route.cityFrom }}</div>
                             <div class="flight-arrow">→</div>
                             <div class="flight-city">{{ route.cityTo }}</div>
-                            <!-- image come here -->
+                            <div><img src="{{ url_for('static', filename=logos[route.airline][14:]) }}" alt="nologo"/></div>
                         </div>
                         <div class="flight-details">
                             <div class="flight-detail">
@@ -83,7 +83,7 @@
 
                 <div class="flights-section">
                     <div class="flights-header">
-                        ✈️ Részletel
+                        ✈️ Részletek
                     </div>
                     {% for route in itinerary.route_return %}
                     <div class="flight-card">
@@ -91,7 +91,7 @@
                             <div class="flight-city">{{ route.cityFrom }}</div>
                             <div class="flight-arrow">→</div>
                             <div class="flight-city">{{ route.cityTo }}</div>
-                            <!-- image come here -->
+                            <div><img src="{{ url_for('static', filename=logos[route.airline][14:]) }}" alt="nologo"/></div>
                         </div>
                         <div class="flight-details">
                             <div class="flight-detail">

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, abort
 
 from common.database import Itinerary, Search
+from common.stat_utils import collect_logos
 from webapp import db
 
 flight_blueprint = Blueprint('flight',__name__)
@@ -23,4 +24,5 @@ def flight(itinerary_id):
         abort(404)
     itinerary=[prices[-1].rowid]
     result = db.fill_missing_itineraries(itinerary)
-    return render_template('flight.html',itinerary=result['itineraries'][0],prices=prices)
+    logos = collect_logos(result)
+    return render_template('flight.html',itinerary=result['itineraries'][0],prices=prices,logos=logos)
