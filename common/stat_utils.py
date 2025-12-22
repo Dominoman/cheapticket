@@ -54,7 +54,7 @@ def collect_logos(itineraries:dict[str,list])->dict[str,str]:
             for route in itinerary[direction]:
                 airline_code = route['airline']
                 if airline_code not in logos:
-                    logos[airline_code] = ninja.get_logo(airline_code, cached=True)
+                    logos[airline_code] = ninja.get_logo(airline_code, cached=True)["logo_url"]
     return logos
 
 def send_stat_mail(db:Database,send_to:str)->None:
