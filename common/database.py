@@ -155,6 +155,8 @@ class Database:
         Inserts a new search and its itineraries and routes into the database from JSON data.
         Returns False if the search already exists, True if inserted.
         """
+        if json_data['_results']==0:
+            return False
         stmt = select(Search).where(Search.search_id == json_data["search_id"])
         old_search = self.session.execute(stmt).scalar_one_or_none()
         if old_search is not None:
@@ -265,24 +267,43 @@ class Database:
         """
         Deletes the given search and all related itineraries and unused routes from the database.
         """
-        itinerary_rowids=[it.rowid for it in search.itinerary]
+        # gather itineraries for this search
+        itineraries = list(search.itinerary)
+        itinerary_rowids = [it.rowid for it in itineraries]
 
-        subselect = (select(t_itinerary2route.c.route_id).
-                     where(t_itinerary2route.c.itinerary_id.in_(itinerary_rowids)).
-                     distinct()
-                     )
-        stmt = (select(t_itinerary2route.c.route_id).
-                where(t_itinerary2route.c.route_id.in_(subselect)).
-                group_by(t_itinerary2route.c.route_id).
-                having(func.count('*') == 1)
+        # collect route rowids referenced by these itineraries
+        route_rowids: set[int] = set()
+        for it in itineraries:
+            for r in it.route:
+                if getattr(r, "rowid", None) is not None:
+                    route_rowids.add(r.rowid)
+
+        # delete itineraries
+        for it in itineraries:
+            self.session.delete(it)
+
+        # for each referenced route, check if it will be orphaned after deletion
+        for route_rowid in route_rowids:
+            # count remaining links for this route excluding the itineraries we just deleted
+            remaining_count_stmt = (
+                select(func.count())
+                .select_from(t_itinerary2route)
+                .where(
+                    t_itinerary2route.c.route_id == route_rowid,
+                    t_itinerary2route.c.itinerary_id.notin_(itinerary_rowids),
                 )
-        unused_route_ids={row[0] for row in self.session.execute(stmt)}
-        self.session.execute(t_itinerary2route.delete().
-                             where(t_itinerary2route.c.itinerary_id.in_(itinerary_rowids)))
-        if unused_route_ids:
-            self.session.query(Route).filter(Route.rowid.in_(unused_route_ids)).delete(synchronize_session=False)
-        self.session.query(Itinerary).filter(Itinerary.rowid.in_(itinerary_rowids)).delete(synchronize_session=False)
-        self.session.query(Search).filter(Search.rowid == search.rowid).delete(synchronize_session=False)
+            )
+            remaining = self.session.execute(remaining_count_stmt).scalar_one()
+            if remaining == 0:
+                route_obj = self.session.get(Route, route_rowid)
+                if route_obj is not None:
+                    # remove from cache if present
+                    if getattr(route_obj, "route_id", None) in self.route_cache:
+                        self.route_cache.pop(route_obj.route_id, None)
+                    self.session.delete(route_obj)
+
+        # finally delete the search record and commit
+        self.session.delete(search)
         self.session.commit()
 
     def clean_actual_flag(self)->None:
