@@ -297,9 +297,6 @@ class Database:
             if remaining == 0:
                 route_obj = self.session.get(Route, route_rowid)
                 if route_obj is not None:
-                    # remove from cache if present
-                    if getattr(route_obj, "route_id", None) in self.route_cache:
-                        self.route_cache.pop(route_obj.route_id, None)
                     self.session.delete(route_obj)
 
         # finally delete the search record and commit
