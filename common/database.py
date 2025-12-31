@@ -2,7 +2,7 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Tuple
 
 from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, select, Index, Update, Integer, \
-    DateTime, Boolean, Date, UniqueConstraint, Float, func
+    DateTime, Boolean, Date, UniqueConstraint, Float, delete
 from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship, Query
 
 
@@ -271,35 +271,18 @@ class Database:
         itineraries = list(search.itinerary)
         itinerary_rowids = [it.rowid for it in itineraries]
 
-        # collect route rowids referenced by these itineraries
-        route_rowids: set[int] = set()
-        for it in itineraries:
-            for r in it.route:
-                if getattr(r, "rowid", None) is not None:
-                    route_rowids.add(r.rowid)
+        # törlés a kapcsoló táblából
+        stmt = delete(t_itinerary2route).where(t_itinerary2route.c.itinerary_id.in_(itinerary_rowids))
+        self.session.execute(stmt)
 
-        # delete itineraries
-        for it in itineraries:
-            self.session.delete(it)
+        stmt = delete(Itinerary).where(Itinerary.rowid.in_(itinerary_rowids))
+        self.session.execute(stmt)
 
-        # for each referenced route, check if it will be orphaned after deletion
-        for route_rowid in route_rowids:
-            # count remaining links for this route excluding the itineraries we just deleted
-            remaining_count_stmt = (
-                select(func.count())
-                .select_from(t_itinerary2route)
-                .where(
-                    t_itinerary2route.c.route_id == route_rowid,
-                    t_itinerary2route.c.itinerary_id.notin_(itinerary_rowids),
-                )
-            )
-            remaining = self.session.execute(remaining_count_stmt).scalar_one()
-            if remaining == 0:
-                route_obj = self.session.get(Route, route_rowid)
-                if route_obj is not None:
-                    self.session.delete(route_obj)
+        subq = select(t_itinerary2route.c.route_id).distinct()
 
-        # finally delete the search record and commit
+        stmt = delete(Route).where(Route.rowid.notin_(subq))
+        self.session.execute(stmt)
+
         self.session.delete(search)
         self.session.commit()
 
