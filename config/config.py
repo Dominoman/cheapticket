@@ -16,5 +16,6 @@ class Config:
     SMTP_TO = os.environ.get("SMTP_TO", "nobody")
     APININJASKEY = os.environ.get("APININJASKEY")
     LOGOS = os.environ.get("LOGOS", "logos")
+    AUTO_CLEANUP = os.environ.get("AUTO_CLEANUP","false") == "true"
 
 config = Config()
