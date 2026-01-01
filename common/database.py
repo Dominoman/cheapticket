@@ -2,7 +2,7 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Tuple
 
 from sqlalchemy import create_engine, TIMESTAMP, ForeignKey, String, Table, Column, select, Index, Update, Integer, \
-    DateTime, Boolean, Date, UniqueConstraint, Float, delete
+    DateTime, Boolean, Date, UniqueConstraint, Float, delete, exists
 from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column, relationship, Query
 
 
@@ -275,12 +275,19 @@ class Database:
         stmt = delete(t_itinerary2route).where(t_itinerary2route.c.itinerary_id.in_(itinerary_rowids))
         self.session.execute(stmt)
 
+        # Itineraryk törlés
         stmt = delete(Itinerary).where(Itinerary.rowid.in_(itinerary_rowids))
         self.session.execute(stmt)
 
-        subq = select(t_itinerary2route.c.route_id).distinct()
+        # Árva routeok törlése
+        stmt = delete(Route).where(
+            ~exists(
+                select(1).where(
+                    t_itinerary2route.c.route_id == Route.rowid
+                )
+            )
+        )
 
-        stmt = delete(Route).where(Route.rowid.notin_(subq))
         self.session.execute(stmt)
 
         self.session.delete(search)

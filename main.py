@@ -59,6 +59,7 @@ if __name__ == "__main__":
                     break
         range_start = range_start + relativedelta(months=1, day=1)
 
+    send_stat_mail(db, config.SMTP_TO)
     clean_up_start=time.time()
     if config.AUTO_CLEANUP:
         logging.info("Clean Up")
@@ -66,7 +67,6 @@ if __name__ == "__main__":
         result = db.get_all_search().where(Search.range_end < today).all()
         for search in result:
             db.delete_search(search)
-        measure_clean_up = time.time()-clean_up_start
+    measure_clean_up = time.time()-clean_up_start
     logging.info(f"Running kiwi time:{measure_kiwi}, running database time:{measure_db}, clean up time:{measure_clean_up}")
-    send_stat_mail(db, config.SMTP_TO)
     logging.info("Finished")
